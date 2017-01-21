@@ -1,6 +1,6 @@
 {
     "name": "nikolaposa/rate-limit",
-    "description": "Component that enables rate-limiting requests to application endpoints.",
+    "description": "Component that enables rate limiting on applications endpoints.",
     "type": "library",
     "license": "MIT",
     "authors": [
