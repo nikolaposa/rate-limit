@@ -14,6 +14,7 @@ namespace RateLimit\Tests\Storage;
 
 use RateLimit\Storage\StorageInterface;
 use RateLimit\Storage\FilesystemStorage;
+use RateLimit\Exception\StorageRecordNotExistException;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -52,5 +53,15 @@ class FilesystemStorageTest extends BaseFilesystemStorageTest
         $this->storage->set('test', ['foo' => 'bar']);
 
         $this->assertSame($data, $this->storage->get('test'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_raises_exception_if_key_not_exists()
+    {
+        $this->expectException(StorageRecordNotExistException::class);
+
+        $this->storage->get('invalid');
     }
 }
