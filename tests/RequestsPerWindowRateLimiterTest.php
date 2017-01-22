@@ -13,11 +13,13 @@ declare(strict_types=1);
 namespace RateLimit\Tests;
 
 use PHPUnit\Framework\TestCase;
+use RateLimit\RequestsPerWindowRateLimiterFactory;
 use RateLimit\RequestsPerWindowRateLimiter;
-use RateLimit\Storage\InMemoryStorage;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
+use Zend\Diactoros\Response\JsonResponse;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -29,7 +31,7 @@ class RequestsPerWindowRateLimiterTest extends TestCase
      */
     public function it_sets_rate_limit_headers()
     {
-        $rateLimiter = RequestsPerWindowRateLimiter::create(new InMemoryStorage(), [
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
             'limit' => 5,
             'window' => 3600,
         ]);
@@ -47,7 +49,7 @@ class RequestsPerWindowRateLimiterTest extends TestCase
      */
     public function it_sets_appropriate_response_status_when_limit_is_reached()
     {
-        $rateLimiter = RequestsPerWindowRateLimiter::create(new InMemoryStorage(), [
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
             'limit' => 1,
             'window' => 3600,
         ]);
@@ -65,7 +67,7 @@ class RequestsPerWindowRateLimiterTest extends TestCase
      */
     public function it_does_not_alter_status_code_when_below_the_limit()
     {
-        $rateLimiter = RequestsPerWindowRateLimiter::create(new InMemoryStorage(), [
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
             'limit' => 5,
             'window' => 3600,
         ]);
@@ -81,7 +83,7 @@ class RequestsPerWindowRateLimiterTest extends TestCase
      */
     public function it_decrements_remaining_header()
     {
-        $rateLimiter = RequestsPerWindowRateLimiter::create(new InMemoryStorage(), [
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
             'limit' => 5,
             'window' => 3600,
         ]);
@@ -102,9 +104,9 @@ class RequestsPerWindowRateLimiterTest extends TestCase
      */
     public function it_resets_rate_limit_after_time_window_passes()
     {
-        $rateLimiter = RequestsPerWindowRateLimiter::create(new InMemoryStorage(), [
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
             'limit' => 1,
-            'window' => 2,
+            'window' => 1,
         ]);
 
         /* @var $response ResponseInterface */
@@ -117,12 +119,35 @@ class RequestsPerWindowRateLimiterTest extends TestCase
 
         $this->assertEquals(RequestsPerWindowRateLimiter::LIMIT_EXCEEDED_HTTP_STATUS_CODE, $response->getStatusCode());
 
-        sleep(3);
+        sleep(2);
 
         /* @var $response ResponseInterface */
         $response = $rateLimiter(new Request(), new Response());
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('1', $response->getHeaderLine(RequestsPerWindowRateLimiter::HEADER_REMAINING));
+    }
+
+    /**
+     * @test
+     */
+    public function it_invokes_limit_exceeded_handler_supplied_through_options()
+    {
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
+            'limit' => 1,
+            'window' => 3600,
+            'limitExceededHandler' => function (RequestInterface $request, ResponseInterface $response) {
+                return new JsonResponse(['message' => 'Too many requests'], $response->getStatusCode());
+            }
+        ]);
+
+        $rateLimiter(new Request(), new Response());
+
+        /* @var $response JsonResponse */
+        $response = $rateLimiter(new Request(), new Response());
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(RequestsPerWindowRateLimiter::LIMIT_EXCEEDED_HTTP_STATUS_CODE, $response->getStatusCode());
+        $this->assertContains('Too many requests', $response->getBody()->getContents());
     }
 }

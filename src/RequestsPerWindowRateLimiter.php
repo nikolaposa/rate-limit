@@ -16,7 +16,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RateLimit\Storage\StorageInterface;
 use RateLimit\Identity\IdentityGeneratorInterface;
-use RateLimit\Identity\IpAddressIdentityGenerator;
+use RateLimit\Options\RequestsPerWindowOptions;
 use RateLimit\Exception\StorageRecordNotExistException;
 
 /**
@@ -36,43 +36,25 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
     private $storage;
 
     /**
-     * @var array
-     */
-    private $options;
-
-    /**
      * @var IdentityGeneratorInterface
      */
     private $identityGenerator;
+
+    /**
+     * @var RequestsPerWindowOptions
+     */
+    private $options;
 
     /**
      * @var array
      */
     private $rateLimit;
 
-    /**
-     * @var array
-     */
-    private static $defaultOptions = [
-        'limit' => 100,
-        'window' => 900, //15 minutes
-        'limitExceededHandler' => null,
-    ];
-
-    private function __construct(StorageInterface $storage, array $options, IdentityGeneratorInterface $identityGenerator)
+    public function __construct(StorageInterface $storage, IdentityGeneratorInterface $identityGenerator, RequestsPerWindowOptions $options)
     {
         $this->storage = $storage;
-        $this->options = $options;
         $this->identityGenerator = $identityGenerator;
-    }
-
-    public static function create(StorageInterface $storage, array $options = [], IdentityGeneratorInterface $identityGenerator = null)
-    {
-        return new self(
-            $storage,
-            array_merge(self::$defaultOptions, $options),
-            $identityGenerator ?? new IpAddressIdentityGenerator()
-        );
+        $this->options = $options;
     }
 
     /**
@@ -103,8 +85,8 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
             $rateLimit = $this->storage->get($key);
         } catch (StorageRecordNotExistException $ex) {
             $rateLimit = [
-                'remaining' => $this->options['limit'],
-                'reset' => time() + $this->options['window'],
+                'remaining' => $this->options->getLimit(),
+                'reset' => time() + $this->options->getWindow(),
             ];
         }
 
@@ -129,8 +111,8 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
     private function resetRateLimit()
     {
         $this->rateLimit = [
-            'remaining' => $this->options['limit'],
-            'reset' => time() + $this->options['window'],
+            'remaining' => $this->options->getLimit(),
+            'reset' => time() + $this->options->getWindow(),
         ];
     }
 
@@ -141,11 +123,8 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
             ->withStatus(self::LIMIT_EXCEEDED_HTTP_STATUS_CODE)
         ;
 
-        $limitExceededHandler = $this->options['limitExceededHandler'];
-
-        if (null !== $limitExceededHandler && is_callable($limitExceededHandler)) {
-            $response = $limitExceededHandler($request, $response);
-        }
+        $limitExceededHandler = $this->options->getLimitExceededHandler();
+        $response = $limitExceededHandler($request, $response);
 
         return $response;
     }
@@ -160,7 +139,7 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
     private function setRateLimitHeaders(ResponseInterface $response) : ResponseInterface
     {
         return $response
-            ->withHeader(self::HEADER_LIMIT, (string) $this->options['limit'])
+            ->withHeader(self::HEADER_LIMIT, (string) $this->options->getLimit())
             ->withHeader(self::HEADER_REMAINING, (string) $this->rateLimit['remaining'])
             ->withHeader(self::HEADER_RESET, (string) $this->rateLimit['reset'])
         ;
