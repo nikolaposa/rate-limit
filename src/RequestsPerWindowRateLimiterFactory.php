@@ -15,8 +15,9 @@ namespace RateLimit;
 use RateLimit\Options\RequestsPerWindowOptions;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use RateLimit\Storage\InMemoryStorage;
 use RateLimit\Identity\IpAddressIdentityGenerator;
+use RateLimit\Storage\InMemoryStorage;
+use RateLimit\Storage\FilesystemStorage;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -30,6 +31,15 @@ final class RequestsPerWindowRateLimiterFactory
     {
         return new RequestsPerWindowRateLimiter(
             new InMemoryStorage(),
+            new IpAddressIdentityGenerator(),
+            self::createOptions($options)
+        );
+    }
+
+    public static function createFilesystemBackedRateLimiter(string $storageDirectory, array $options = []) : RequestsPerWindowRateLimiter
+    {
+        return new RequestsPerWindowRateLimiter(
+            new FilesystemStorage($storageDirectory),
             new IpAddressIdentityGenerator(),
             self::createOptions($options)
         );
