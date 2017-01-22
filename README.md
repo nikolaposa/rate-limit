@@ -5,7 +5,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/nikolaposa/rate-limit/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/nikolaposa/rate-limit/?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/nikolaposa/rate-limit/v/stable)](https://packagist.org/packages/nikolaposa/rate-limit)
 
-Component that enables rate limiting of an API and/or other application endpoints. Although designed as a standalone, it provides a middleware that can be used with any framework that supports the concept.
+Rate limiting middleware designed for API and/or other application endpoints. Although it's framework-agnostic, it can be used with any framework that supports the middleware concept.
 
 ## Installation
 

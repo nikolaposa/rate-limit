@@ -10,18 +10,26 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\KeyGenerator;
+namespace RateLimit\Identity;
 
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-final class IpAddressKeyGenerator implements KeyGeneratorInterface
+final class IpAddressIdentityGenerator implements IdentityGeneratorInterface
 {
-    public function getKey(ServerRequestInterface $serverRequest) : string
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentity(RequestInterface $request) : string
     {
-        $serverParams = $serverRequest->getServerParams();
+        if (!$request instanceof ServerRequestInterface) {
+            return 'ANONYMOUS';
+        }
+
+        $serverParams = $request->getServerParams();
 
         if (array_key_exists('HTTP_CLIENT_IP', $serverParams)) {
             return $serverParams['HTTP_CLIENT_IP'];

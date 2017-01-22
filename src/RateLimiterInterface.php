@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace RateLimit;
 
-use Psr\Http\Message\ServerRequestInterface;
-use RateLimit\Exception\RateLimitExceededException;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -21,11 +21,11 @@ use RateLimit\Exception\RateLimitExceededException;
 interface RateLimiterInterface
 {
     /**
-     * @param ServerRequestInterface $serverRequest
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param callable $out
      *
-     * @throws RateLimitExceededException
-     *
-     * @return void
+     * @return ResponseInterface|null
      */
-    public function handle(ServerRequestInterface $serverRequest);
+    public function __invoke(RequestInterface $request, ResponseInterface $response, callable $out = null);
 }

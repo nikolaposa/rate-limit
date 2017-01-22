@@ -10,11 +10,19 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\Exception;
+namespace RateLimit\Identity;
+
+use Psr\Http\Message\RequestInterface;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-interface RateLimitExceededException
+interface IdentityGeneratorInterface
 {
+    /**
+     * @param RequestInterface $request
+     *
+     * @return string
+     */
+    public function getIdentity(RequestInterface $request) : string;
 }
