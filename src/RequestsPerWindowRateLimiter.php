@@ -84,12 +84,10 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
 
         $this->initRateLimit($key);
 
-        if ($this->isLimitExceeded()) {
-            return $this->onLimitExceeded($request, $response);
-        }
-
         if ($this->shouldResetRateLimit()) {
             $this->resetRateLimit();
+        } elseif ($this->isLimitExceeded()) {
+            return $this->onLimitExceeded($request, $response);
         } else {
             $this->updateRateLimit();
         }
