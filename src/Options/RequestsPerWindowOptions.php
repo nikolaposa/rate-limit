@@ -15,7 +15,7 @@ namespace RateLimit\Options;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class RequestsPerWindowOptions
+class RequestsPerWindowOptions implements OptionsInterface
 {
     /**
      * @var int

@@ -22,23 +22,13 @@ use RateLimit\Exception\StorageRecordNotExistException;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-final class RequestsPerWindowRateLimiter implements RateLimiterInterface
+final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
 {
     const LIMIT_EXCEEDED_HTTP_STATUS_CODE = 429; //HTTP 429 "Too Many Requests" (RFC 6585)
 
     const HEADER_LIMIT = 'X-RateLimit-Limit';
     const HEADER_REMAINING = 'X-RateLimit-Remaining';
     const HEADER_RESET = 'X-RateLimit-Reset';
-
-    /**
-     * @var StorageInterface
-     */
-    private $storage;
-
-    /**
-     * @var IdentityGeneratorInterface
-     */
-    private $identityGenerator;
 
     /**
      * @var RequestsPerWindowOptions
@@ -52,8 +42,8 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
 
     public function __construct(StorageInterface $storage, IdentityGeneratorInterface $identityGenerator, RequestsPerWindowOptions $options)
     {
-        $this->storage = $storage;
-        $this->identityGenerator = $identityGenerator;
+        parent::__construct($storage, $identityGenerator);
+        
         $this->options = $options;
     }
 
@@ -62,9 +52,9 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, callable $out = null)
     {
-        $key = $this->identityGenerator->getIdentity($request);
+        $identity = $this->identityGenerator->getIdentity($request);
 
-        $this->initRateLimit($key);
+        $this->initRateLimit($identity);
 
         if ($this->shouldResetRateLimit()) {
             $this->resetRateLimit();
@@ -74,15 +64,15 @@ final class RequestsPerWindowRateLimiter implements RateLimiterInterface
             $this->updateRateLimit();
         }
 
-        $this->storage->set($key, $this->rateLimit);
+        $this->storage->set($identity, $this->rateLimit);
 
         return $this->onBelowLimit($request, $response, $out);
     }
 
-    private function initRateLimit(string $key)
+    private function initRateLimit(string $identity)
     {
         try {
-            $rateLimit = $this->storage->get($key);
+            $rateLimit = $this->storage->get($identity);
         } catch (StorageRecordNotExistException $ex) {
             $rateLimit = [
                 'remaining' => $this->options->getLimit(),
