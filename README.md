@@ -29,7 +29,7 @@ Zend Expressive usage example:
 ```php
 $app = \Zend\Expressive\AppFactory::create();
 
-$app->pipe(RateLimit\RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
+$app->pipe(\RateLimit\RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
     'limit' => 1000,
     'window' => 3600,
 ]));
