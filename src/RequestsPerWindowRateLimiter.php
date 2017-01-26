@@ -17,7 +17,6 @@ use Psr\Http\Message\ResponseInterface;
 use RateLimit\Storage\StorageInterface;
 use RateLimit\Identity\IdentityGeneratorInterface;
 use RateLimit\Options\RequestsPerWindowOptions;
-use RateLimit\Exception\StorageRecordNotExistException;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -36,9 +35,14 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     private $options;
 
     /**
-     * @var array
+     * @var string
      */
-    private $rateLimit;
+    private $identity;
+
+    /**
+     * @var int
+     */
+    private $current;
 
     public function __construct(StorageInterface $storage, IdentityGeneratorInterface $identityGenerator, RequestsPerWindowOptions $options)
     {
@@ -52,58 +56,45 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, callable $out = null)
     {
-        $identity = $this->identityGenerator->getIdentity($request);
+        $this->resolveIdentity($request);
 
-        $this->initRateLimit($identity);
+        $this->initCurrent();
 
-        if ($this->shouldResetRateLimit()) {
-            $this->resetRateLimit();
-        } elseif ($this->isLimitExceeded()) {
+        if ($this->isLimitExceeded()) {
             return $this->onLimitExceeded($request, $response);
-        } else {
-            $this->updateRateLimit();
         }
 
-        $this->storage->set($identity, $this->rateLimit);
+        $this->hit();
 
         return $this->onBelowLimit($request, $response, $out);
     }
 
-    private function initRateLimit(string $identity)
+    private function resolveIdentity(RequestInterface $request)
     {
-        try {
-            $rateLimit = $this->storage->get($identity);
-        } catch (StorageRecordNotExistException $ex) {
-            $rateLimit = [
-                'remaining' => $this->options->getLimit(),
-                'reset' => time() + $this->options->getWindow(),
-            ];
+        $this->identity = $this->identityGenerator->getIdentity($request);
+    }
+
+    private function initCurrent()
+    {
+        $current = $this->storage->get($this->identity, false);
+
+        if (false === $current) {
+            $current = 0;
+
+            $this->storage->set($this->identity, 0, $this->options->getWindow());
         }
 
-        $this->rateLimit = $rateLimit;
+        $this->current = $current;
     }
 
     private function isLimitExceeded() : bool
     {
-        return $this->rateLimit['remaining'] <= 0;
+        return ($this->current > $this->options->getLimit());
     }
 
-    private function updateRateLimit()
+    private function hit()
     {
-        $this->rateLimit['remaining']--;
-    }
-
-    private function shouldResetRateLimit() : bool
-    {
-        return time() >= $this->rateLimit['reset'];
-    }
-
-    private function resetRateLimit()
-    {
-        $this->rateLimit = [
-            'remaining' => $this->options->getLimit(),
-            'reset' => time() + $this->options->getWindow(),
-        ];
+        $this->storage->increment($this->identity, 1);
     }
 
     private function onLimitExceeded(RequestInterface $request, ResponseInterface $response) : ResponseInterface
@@ -130,8 +121,8 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     {
         return $response
             ->withHeader(self::HEADER_LIMIT, (string) $this->options->getLimit())
-            ->withHeader(self::HEADER_REMAINING, (string) $this->rateLimit['remaining'])
-            ->withHeader(self::HEADER_RESET, (string) $this->rateLimit['reset'])
+            ->withHeader(self::HEADER_REMAINING, (string) ($this->options->getLimit() - $this->current))
+            ->withHeader(self::HEADER_RESET, (string) (time() + $this->storage->ttl($this->identity)))
         ;
     }
 }
