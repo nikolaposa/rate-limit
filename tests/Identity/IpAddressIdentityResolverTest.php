@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace RateLimit\Tests\Identity;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase;
 use RateLimit\Identity\IdentityResolverInterface;
 use RateLimit\Identity\IpAddressIdentityResolver;
 use Zend\Diactoros\ServerRequestFactory;
@@ -22,7 +22,7 @@ use Zend\Diactoros\Request;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class IpAddressIdentityResolverTest extends TestCase
+class IpAddressIdentityResolverTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var IdentityResolverInterface

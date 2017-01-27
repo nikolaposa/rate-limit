@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace RateLimit\Tests;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase;
 use RateLimit\RequestsPerWindowRateLimiterFactory;
 use RateLimit\RequestsPerWindowRateLimiter;
 use Psr\Http\Message\RequestInterface;
@@ -24,7 +24,7 @@ use Zend\Diactoros\Response\JsonResponse;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class RequestsPerWindowRateLimiterTest extends TestCase
+class RequestsPerWindowRateLimiterTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @test

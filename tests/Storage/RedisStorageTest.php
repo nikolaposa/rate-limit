@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace RateLimit\Tests\Storage;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase;
 use RateLimit\Storage\StorageInterface;
 use RateLimit\Storage\RedisStorage;
 use Redis;
@@ -20,7 +20,7 @@ use Redis;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class RedisStorageTest extends TestCase
+class RedisStorageTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var StorageInterface
