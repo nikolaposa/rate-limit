@@ -69,7 +69,17 @@ abstract class StorageTest extends PHPUnit_Framework_TestCase
 
         $this->storage->increment('increment_key', 5);
 
-        $this->assertEquals(15, $this->storage->get('increment_key'));
+        $this->assertEquals(15, (int) $this->storage->get('increment_key'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_increments_not_previously_set_key()
+    {
+        $this->storage->increment('increment_non_existing_key', 5);
+
+        $this->assertEquals(5, (int) $this->storage->get('increment_non_existing_key'));
     }
 
     /**

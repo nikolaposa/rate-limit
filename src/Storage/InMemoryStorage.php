@@ -53,6 +53,12 @@ final class InMemoryStorage implements StorageInterface
      */
     public function increment(string $key, int $by)
     {
+        if (!isset($this->store[$key])) {
+            $this->store[$key] = [
+                'data' => 0,
+            ];
+        }
+
         $this->store[$key]['data'] += $by;
     }
 

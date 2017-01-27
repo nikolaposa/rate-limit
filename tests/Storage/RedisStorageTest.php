@@ -36,6 +36,8 @@ class RedisStorageTest extends StorageTest
             $this->markTestSkipped('Cannot connect to Redis.');
         }
 
+        $this->redis->flushDB();
+
         return new RedisStorage($this->redis);
     }
 }
