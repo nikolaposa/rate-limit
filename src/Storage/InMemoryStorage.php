@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace RateLimit\Storage;
 
-use RateLimit\Exception\StorageRecordNotExistException;
-
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
@@ -27,20 +25,60 @@ class InMemoryStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key)
+    public function get(string $key, $default = false)
     {
-        if (!array_key_exists($key, $this->store)) {
-            throw StorageRecordNotExistException::forKey($key);
+        if (
+            !$this->has($key)
+            || $this->hasExpired($key)
+        ) {
+            return $default;
         }
 
-        return $this->store[$key];
+        return $this->store[$key]['data'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $data)
+    public function set(string $key, $data, int $ttl)
     {
-        $this->store[$key] = $data;
+        $this->store[$key] = [
+            'data' => $data,
+            'expires' => time() + $ttl,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function increment(string $key, int $by)
+    {
+        $this->store[$key]['data'] += $by;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ttl(string $key) : int
+    {
+        if (!isset($this->store[$key]['expires'])) {
+            return 0;
+        }
+
+        return max($this->store[$key]['expires'] - time(), 0);
+    }
+
+    private function has(string $key) : bool
+    {
+        return array_key_exists($key, $this->store);
+    }
+
+    private function hasExpired(string $key) : bool
+    {
+        if (!isset($this->store[$key]['expires'])) {
+            return false;
+        }
+
+        return time() > $this->store[$key]['expires'];
     }
 }

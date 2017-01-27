@@ -125,7 +125,6 @@ class RequestsPerWindowRateLimiterTest extends TestCase
         $response = $rateLimiter(new Request(), new Response());
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('1', $response->getHeaderLine(RequestsPerWindowRateLimiter::HEADER_REMAINING));
     }
 
     /**
