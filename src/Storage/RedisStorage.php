@@ -64,6 +64,12 @@ final class RedisStorage implements StorageInterface
      */
     public function ttl(string $key) : int
     {
-        return (int) $this->redis->ttl($key);
+        $ttl = $this->redis->ttl($key);
+
+        if (false === $ttl || $ttl < 0) {
+            return -1;
+        }
+
+        return $ttl;
     }
 }

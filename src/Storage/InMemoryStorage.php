@@ -62,7 +62,7 @@ final class InMemoryStorage implements StorageInterface
     public function ttl(string $key) : int
     {
         if (!isset($this->store[$key]['expires'])) {
-            return 0;
+            return -1;
         }
 
         return max($this->store[$key]['expires'] - time(), 0);
