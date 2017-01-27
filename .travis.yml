@@ -18,6 +18,9 @@ matrix:
   allow_failures:
     - php: hhvm
 
+services:
+  - redis-server
+
 install:
   - travis_retry composer install --no-interaction
 
