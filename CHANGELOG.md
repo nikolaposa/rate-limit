@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.0 - [Unreleased][Unreleased]
 
+### Added
+- [2: Redis-based storage](https://github.com/nikolaposa/rate-limit/pull/2)
+
 ### Backwards-incompatible changes
-- [1: Atomic storage design](https://github.com/nikolaposa/rate-limit/pull/1).
+- [1: Atomic storage design](https://github.com/nikolaposa/rate-limit/pull/1)
 - Rename `IdentityGenerator` to `IdentityResolver`
 
 
