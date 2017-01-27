@@ -39,11 +39,6 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
      */
     private $identity;
 
-    /**
-     * @var int
-     */
-    private $current;
-
     public function __construct(StorageInterface $storage, IdentityGeneratorInterface $identityGenerator, RequestsPerWindowOptions $options)
     {
         parent::__construct($storage, $identityGenerator);
@@ -57,8 +52,6 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     public function __invoke(RequestInterface $request, ResponseInterface $response, callable $out = null)
     {
         $this->resolveIdentity($request);
-
-        $this->initCurrent();
 
         if ($this->isLimitExceeded()) {
             return $this->onLimitExceeded($request, $response);
@@ -74,22 +67,23 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
         $this->identity = $this->identityGenerator->getIdentity($request);
     }
 
-    private function initCurrent()
+    private function getCurrent() : int
     {
         $current = $this->storage->get($this->identity, false);
 
         if (false === $current) {
             $current = 0;
 
-            $this->storage->set($this->identity, 0, $this->options->getWindow());
+            $this->storage->set($this->identity, $current, $this->options->getWindow());
         }
 
-        $this->current = $current;
+        return $current;
     }
 
     private function isLimitExceeded() : bool
     {
-        return ($this->current > $this->options->getLimit());
+        $current = $this->getCurrent();
+        return ($current >= $this->options->getLimit());
     }
 
     private function hit()
@@ -121,7 +115,7 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     {
         return $response
             ->withHeader(self::HEADER_LIMIT, (string) $this->options->getLimit())
-            ->withHeader(self::HEADER_REMAINING, (string) ($this->options->getLimit() - $this->current))
+            ->withHeader(self::HEADER_REMAINING, (string) ($this->options->getLimit() - $this->getCurrent()))
             ->withHeader(self::HEADER_RESET, (string) (time() + $this->storage->ttl($this->identity)))
         ;
     }

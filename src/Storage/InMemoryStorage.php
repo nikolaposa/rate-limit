@@ -34,7 +34,7 @@ class InMemoryStorage implements StorageInterface
             return $default;
         }
 
-        return $this->store[$key];
+        return $this->store[$key]['data'];
     }
 
     /**
