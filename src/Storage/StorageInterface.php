@@ -27,12 +27,12 @@ interface StorageInterface
 
     /**
      * @param string $key
-     * @param mixed $data
+     * @param mixed $value
      * @param int $ttl
      *
      * @return void
      */
-    public function set(string $key, $data, int $ttl);
+    public function set(string $key, $value, int $ttl);
 
     /**
      * @param string $key

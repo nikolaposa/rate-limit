@@ -17,6 +17,8 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RateLimit\Identity\IpAddressIdentityResolver;
 use RateLimit\Storage\InMemoryStorage;
+use RateLimit\Storage\RedisStorage;
+use Redis;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -30,6 +32,15 @@ final class RequestsPerWindowRateLimiterFactory
     {
         return new RequestsPerWindowRateLimiter(
             new InMemoryStorage(),
+            new IpAddressIdentityResolver(),
+            self::createOptions($options)
+        );
+    }
+
+    public static function createRedisBackedRateLimiter(array $options = []) : RequestsPerWindowRateLimiter
+    {
+        return new RequestsPerWindowRateLimiter(
+            new RedisStorage(new Redis()),
             new IpAddressIdentityResolver(),
             self::createOptions($options)
         );

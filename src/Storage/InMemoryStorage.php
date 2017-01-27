@@ -15,7 +15,7 @@ namespace RateLimit\Storage;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class InMemoryStorage implements StorageInterface
+final class InMemoryStorage implements StorageInterface
 {
     /**
      * @var array
@@ -40,10 +40,10 @@ class InMemoryStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $data, int $ttl)
+    public function set(string $key, $value, int $ttl)
     {
         $this->store[$key] = [
-            'data' => $data,
+            'data' => $value,
             'expires' => time() + $ttl,
         ];
     }
