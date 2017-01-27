@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-final class IpAddressIdentityGenerator implements IdentityGeneratorInterface
+final class IpAddressIdentityResolver implements IdentityResolverInterface
 {
     /**
      * {@inheritdoc}
@@ -39,6 +39,6 @@ final class IpAddressIdentityGenerator implements IdentityGeneratorInterface
             return $serverParams['HTTP_X_FORWARDED_FOR'];
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? 'UNKNOWN';
+        return $serverParams['REMOTE_ADDR'] ?? 'ANONYMOUS';
     }
 }

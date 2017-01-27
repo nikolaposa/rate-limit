@@ -15,7 +15,7 @@ namespace RateLimit;
 use RateLimit\Options\RequestsPerWindowOptions;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use RateLimit\Identity\IpAddressIdentityGenerator;
+use RateLimit\Identity\IpAddressIdentityResolver;
 use RateLimit\Storage\InMemoryStorage;
 
 /**
@@ -30,7 +30,7 @@ final class RequestsPerWindowRateLimiterFactory
     {
         return new RequestsPerWindowRateLimiter(
             new InMemoryStorage(),
-            new IpAddressIdentityGenerator(),
+            new IpAddressIdentityResolver(),
             self::createOptions($options)
         );
     }

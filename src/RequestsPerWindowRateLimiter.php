@@ -15,7 +15,7 @@ namespace RateLimit;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RateLimit\Storage\StorageInterface;
-use RateLimit\Identity\IdentityGeneratorInterface;
+use RateLimit\Identity\IdentityResolverInterface;
 use RateLimit\Options\RequestsPerWindowOptions;
 
 /**
@@ -39,9 +39,9 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
      */
     private $identity;
 
-    public function __construct(StorageInterface $storage, IdentityGeneratorInterface $identityGenerator, RequestsPerWindowOptions $options)
+    public function __construct(StorageInterface $storage, IdentityResolverInterface $identityResolver, RequestsPerWindowOptions $options)
     {
-        parent::__construct($storage, $identityGenerator);
+        parent::__construct($storage, $identityResolver);
         
         $this->options = $options;
     }
@@ -64,7 +64,7 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
 
     private function resolveIdentity(RequestInterface $request)
     {
-        $this->identity = $this->identityGenerator->getIdentity($request);
+        $this->identity = $this->identityResolver->getIdentity($request);
     }
 
     private function getCurrent() : int

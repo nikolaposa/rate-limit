@@ -17,7 +17,7 @@ use Psr\Http\Message\RequestInterface;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-interface IdentityGeneratorInterface
+interface IdentityResolverInterface
 {
     /**
      * @param RequestInterface $request

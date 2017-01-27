@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace RateLimit;
 
 use RateLimit\Storage\StorageInterface;
-use RateLimit\Identity\IdentityGeneratorInterface;
+use RateLimit\Identity\IdentityResolverInterface;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -26,13 +26,13 @@ abstract class AbstractRateLimiter implements RateLimiterInterface
     protected $storage;
 
     /**
-     * @var IdentityGeneratorInterface
+     * @var IdentityResolverInterface
      */
-    protected $identityGenerator;
+    protected $identityResolver;
 
-    public function __construct(StorageInterface $storage, IdentityGeneratorInterface $identityGenerator)
+    public function __construct(StorageInterface $storage, IdentityResolverInterface $identityResolver)
     {
         $this->storage = $storage;
-        $this->identityGenerator = $identityGenerator;
+        $this->identityResolver = $identityResolver;
     }
 }
