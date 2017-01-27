@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.2.0 - [Unreleased][Unreleased]
+## 0.2.0 - 2017-01-27
 
 ### Added
 - [2: Redis-based storage](https://github.com/nikolaposa/rate-limit/pull/2)
