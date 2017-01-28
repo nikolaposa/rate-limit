@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-final class IpAddressIdentityResolver implements IdentityResolverInterface
+final class IpAddressIdentityResolver extends AbstractIdentityResolver
 {
     /**
      * {@inheritdoc}
@@ -26,7 +26,7 @@ final class IpAddressIdentityResolver implements IdentityResolverInterface
     public function getIdentity(RequestInterface $request) : string
     {
         if (!$request instanceof ServerRequestInterface) {
-            return 'ANONYMOUS';
+            return self::getDefaultIdentity($request);
         }
 
         $serverParams = $request->getServerParams();
@@ -39,6 +39,6 @@ final class IpAddressIdentityResolver implements IdentityResolverInterface
             return $serverParams['HTTP_X_FORWARDED_FOR'];
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? 'ANONYMOUS';
+        return $serverParams['REMOTE_ADDR'] ?? self::getDefaultIdentity($request);
     }
 }

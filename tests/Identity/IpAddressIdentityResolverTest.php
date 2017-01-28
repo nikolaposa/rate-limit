@@ -79,25 +79,25 @@ class IpAddressIdentityResolverTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_fails_to_resolve_if_none_of_related_server_params_is_not_set()
+    public function it_resolves_default_identity_if_none_of_related_server_params_is_not_set()
     {
         $request = ServerRequestFactory::fromGlobals([]);
 
         $identity = $this->identityResolver->getIdentity($request);
 
-        $this->assertEquals('ANONYMOUS', $identity);
+        $this->assertGreaterThan(0, strlen($identity));
     }
 
     /**
      * @test
      */
-    public function it_fails_to_resolve_if_request_is_not_server_request()
+    public function it_resolves_default_identity_if_request_is_not_server_request()
     {
         $request = new Request();
 
         $identity = $this->identityResolver->getIdentity($request);
 
-        $this->assertEquals('ANONYMOUS', $identity);
+        $this->assertGreaterThan(0, strlen($identity));
     }
 
     /**
