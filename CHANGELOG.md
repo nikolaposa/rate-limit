@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 - [Unreleased][Unreleased]
+
+### Backwards-incompatible changes
+- Improved resolving of the default identity
+
 ## 0.2.0 - 2017-01-27
 
 ### Added
@@ -12,4 +17,4 @@ All notable changes to this project will be documented in this file.
 - Rename `IdentityGenerator` to `IdentityResolver`
 
 
-[Unreleased]: https://github.com/nikolaposa/rate-limit/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/nikolaposa/rate-limit/compare/0.2.0...HEAD
