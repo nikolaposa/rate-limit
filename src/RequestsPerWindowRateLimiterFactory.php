@@ -56,6 +56,7 @@ final class RequestsPerWindowRateLimiterFactory
             $options['limitExceededHandler']
         );
     }
+    
     private static function getDefaultOptions() : array
     {
         return [
