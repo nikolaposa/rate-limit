@@ -73,7 +73,7 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
         return $this->onBelowLimit($request, $response, $out);
     }
 
-    private function whitelist(RequestInterface $request)
+    private function whitelist(RequestInterface $request) : bool
     {
         $whitelist = $this->options->getWhitelist();
 
