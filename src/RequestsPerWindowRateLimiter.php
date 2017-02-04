@@ -54,11 +54,17 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     {
         $this->resolveIdentity($request);
 
-        if ($this->isLimitExceeded()) {
-            return $this->onLimitExceeded($request, $response);
-        }
+        try {
+            $current = $this->getCurrent();
 
-        $this->hit();
+            if ($this->isLimitExceeded($current)) {
+                return $this->onLimitExceeded($request, $response);
+            }
+
+            $this->hit();
+        } catch (StorageValueNotFoundException $ex) {
+            $this->initialHit();
+        }
 
         return $this->onBelowLimit($request, $response, $out);
     }
@@ -70,21 +76,17 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
 
     private function getCurrent() : int
     {
-        try {
-            $current = $this->storage->get($this->identity);
-        } catch (StorageValueNotFoundException $ex) {
-            $current = 0;
-
-            $this->storage->set($this->identity, $current, $this->options->getWindow());
-        }
-
-        return $current;
+        return $this->storage->get($this->identity);
     }
 
-    private function isLimitExceeded() : bool
+    private function isLimitExceeded($current) : bool
     {
-        $current = $this->getCurrent();
         return ($current >= $this->options->getLimit());
+    }
+
+    private function initialHit()
+    {
+        $this->storage->set($this->identity, 1, $this->options->getWindow());
     }
 
     private function hit()
