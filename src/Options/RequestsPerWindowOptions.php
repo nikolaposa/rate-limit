@@ -30,12 +30,18 @@ class RequestsPerWindowOptions implements OptionsInterface
     /**
      * @var callable
      */
+    protected $whitelist;
+
+    /**
+     * @var callable
+     */
     protected $limitExceededHandler;
 
-    public function __construct(int $limit, int $window, callable $limitExceededHandler)
+    public function __construct(int $limit, int $window, callable $whitelist, callable $limitExceededHandler)
     {
         $this->limit = $limit;
         $this->window = $window;
+        $this->whitelist = $whitelist;
         $this->limitExceededHandler = $limitExceededHandler;
     }
 
@@ -47,6 +53,11 @@ class RequestsPerWindowOptions implements OptionsInterface
     public function getWindow() : int
     {
         return $this->window;
+    }
+
+    public function getWhitelist() : callable
+    {
+        return $this->whitelist;
     }
 
     public function getLimitExceededHandler() : callable

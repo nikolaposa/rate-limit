@@ -63,6 +63,7 @@ final class RequestsPerWindowRateLimiterFactory
         return new RequestsPerWindowOptions(
             $options['limit'],
             $options['window'],
+            $options['whitelist'],
             $options['limitExceededHandler']
         );
     }
@@ -72,6 +73,9 @@ final class RequestsPerWindowRateLimiterFactory
         return [
             'limit' => self::DEFAULT_LIMIT,
             'window' => self::DEFAULT_WINDOW,
+            'whitelist' => function (RequestInterface $request) {
+                return false;
+            },
             'limitExceededHandler' => function (RequestInterface $request, ResponseInterface $response) {
                 return $response;
             },
