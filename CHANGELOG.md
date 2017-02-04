@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.3.0 - [Unreleased][Unreleased]
+## 0.3.0 - 2017-02-04
 
 ### Added
 - [3: Ability to whitelist requests](https://github.com/nikolaposa/rate-limit/pull/3)
