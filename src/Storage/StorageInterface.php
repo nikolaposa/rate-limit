@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace RateLimit\Storage;
 
+use RateLimit\Exception\StorageValueNotFoundException;
+
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
@@ -19,11 +21,12 @@ interface StorageInterface
 {
     /**
      * @param string $key
-     * @param mixed $default
+     *
+     * @throws StorageValueNotFoundException
      *
      * @return mixed
      */
-    public function get(string $key, $default = false);
+    public function get(string $key);
 
     /**
      * @param string $key

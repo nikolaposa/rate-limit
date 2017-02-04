@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace RateLimit\Storage;
 
 use Redis;
+use RateLimit\Exception\StorageValueNotFoundException;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -32,12 +33,12 @@ final class RedisStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key, $default = false)
+    public function get(string $key)
     {
         $value = $this->redis->get($key);
 
         if (false === $value) {
-            return $default;
+            throw StorageValueNotFoundException::forKey($key);
         }
 
         return $value;

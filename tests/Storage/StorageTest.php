@@ -12,6 +12,7 @@ namespace RateLimit\Tests\Storage;
 
 use PHPUnit_Framework_TestCase;
 use RateLimit\Storage\StorageInterface;
+use RateLimit\Exception\StorageValueNotFoundException;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -43,21 +44,25 @@ abstract class StorageTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_gets_default_value_if_key_not_set()
+    public function it_raises_exception_if_key_not_set()
     {
-        $this->assertEquals('default', $this->storage->get('not_set', 'default'));
+        $this->expectException(StorageValueNotFoundException::class);
+
+        $this->storage->get('not_set');
     }
 
     /**
      * @test
      */
-    public function it_gets_default_value_if_key_has_expired()
+    public function it_raises_exception_if_key_has_expired()
     {
         $this->storage->set('expired_key', 'test', 1);
 
         sleep(2);
 
-        $this->assertEquals('default', $this->storage->get('expired_key', 'default'));
+        $this->expectException(StorageValueNotFoundException::class);
+
+        $this->storage->get('expired_key');
     }
 
     /**

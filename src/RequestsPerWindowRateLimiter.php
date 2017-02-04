@@ -17,6 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use RateLimit\Storage\StorageInterface;
 use RateLimit\Identity\IdentityResolverInterface;
 use RateLimit\Options\RequestsPerWindowOptions;
+use RateLimit\Exception\StorageValueNotFoundException;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -69,9 +70,9 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
 
     private function getCurrent() : int
     {
-        $current = $this->storage->get($this->identity, false);
-
-        if (false === $current) {
+        try {
+            $current = $this->storage->get($this->identity);
+        } catch (StorageValueNotFoundException $ex) {
             $current = 0;
 
             $this->storage->set($this->identity, $current, $this->options->getWindow());

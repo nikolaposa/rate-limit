@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace RateLimit\Storage;
 
+use RateLimit\Exception\StorageValueNotFoundException;
+
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
@@ -25,13 +27,13 @@ final class InMemoryStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key, $default = false)
+    public function get(string $key)
     {
         if (
             !$this->has($key)
             || $this->hasExpired($key)
         ) {
-            return $default;
+            throw StorageValueNotFoundException::forKey($key);
         }
 
         return $this->store[$key]['data'];
