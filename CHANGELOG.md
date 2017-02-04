@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0 - [Unreleased][Unreleased]
 
+### Added
+- [3: Ability to whitelist requests](https://github.com/nikolaposa/rate-limit/pull/3)
+
 ### Changed
 - Default identity is now generated based on certain request attributes
 - Instead of returning default value, Storage raises exception if value doesn't exist under key
