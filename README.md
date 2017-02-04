@@ -47,7 +47,7 @@ $app->add(\RateLimit\RequestsPerWindowRateLimiterFactory::createInMemoryRateLimi
 ]));
 ```
 
-*Note*: in-memory rate limiter should only be used for testing purposes. This package also provides Redis-backed rate limiter:
+**Note**: in-memory rate limiter should only be used for testing purposes. This package also provides Redis-backed rate limiter:
 
 ```php
 $rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter([
