@@ -47,6 +47,15 @@ $app->add(\RateLimit\RequestsPerWindowRateLimiterFactory::createInMemoryRateLimi
 ]));
 ```
 
+*Note*: in-memory rate limiter should only be used for testing purposes. This package also provides Redis-backed rate limiter:
+
+```php
+$rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter([
+  'host' => '10.0.0.7',
+  'port' => 6379,
+]);
+```
+
 ## Author
 
 **Nikola Poša**

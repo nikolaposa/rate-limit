@@ -25,7 +25,7 @@ class RequestsPerWindowRateLimiterFactoryTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_creates_in_memory_rate_limiter()
+    public function it_creates_default_in_memory_rate_limiter()
     {
         $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter();
 
@@ -35,9 +35,21 @@ class RequestsPerWindowRateLimiterFactoryTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_creates_redis_backed_rate_limiter()
+    public function it_creates_default_redis_backed_rate_limiter()
     {
         $rateLimiter = RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter();
+
+        $this->assertInstanceOf(RequestsPerWindowRateLimiter::class, $rateLimiter);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_redis_backed_rate_limiter_with_custom_redis_options()
+    {
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter([
+            'timeout' => 2.5,
+        ]);
 
         $this->assertInstanceOf(RequestsPerWindowRateLimiter::class, $rateLimiter);
     }

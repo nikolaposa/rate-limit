@@ -37,10 +37,20 @@ final class RequestsPerWindowRateLimiterFactory
         );
     }
 
-    public static function createRedisBackedRateLimiter(array $options = []) : RequestsPerWindowRateLimiter
+    public static function createRedisBackedRateLimiter(array $redisOptions = [], array $options = []) : RequestsPerWindowRateLimiter
     {
+        $redisOptions = array_merge([
+            'host' => '127.0.0.1',
+            'port' => 6379,
+            'timeout' => 0.0,
+        ], $redisOptions);
+
+        $redis = new Redis();
+
+        $redis->connect($redisOptions['host'], $redisOptions['port'], $redisOptions['timeout']);
+
         return new RequestsPerWindowRateLimiter(
-            new RedisStorage(new Redis()),
+            new RedisStorage($redis),
             new IpAddressIdentityResolver(),
             self::createOptions($options)
         );
