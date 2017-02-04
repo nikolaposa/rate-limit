@@ -149,4 +149,27 @@ class RequestsPerWindowRateLimiterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(RequestsPerWindowRateLimiter::LIMIT_EXCEEDED_HTTP_STATUS_CODE, $response->getStatusCode());
         $this->assertContains('Too many requests', $response->getBody()->getContents());
     }
+
+    /**
+     * @test
+     */
+    public function it_provides_option_to_whitelist_requests()
+    {
+        $rateLimiter = RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
+            'limit' => 1,
+            'window' => 3600,
+            'whitelist' => function (RequestInterface $request) {
+                return true;
+            }
+        ]);
+
+        $rateLimiter(new Request(), new Response('php://memory', 200));
+
+        $rateLimiter(new Request(), new Response('php://memory', 200));
+
+        /* @var $response ResponseInterface */
+        $response = $rateLimiter(new Request(), new Response('php://memory', 200));
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }

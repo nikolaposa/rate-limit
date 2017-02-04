@@ -52,6 +52,12 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, callable $out = null)
     {
+        $whitelist = $this->options->getWhitelist();
+
+        if ($whitelist($request)) {
+            return $this->next($request, $response, $out);
+        }
+
         $this->resolveIdentity($request);
 
         try {
@@ -111,6 +117,11 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     {
         $response = $this->setRateLimitHeaders($response);
 
+        return $this->next($request, $response, $out);
+    }
+
+    private function next(RequestInterface $request, ResponseInterface $response, callable $out = null)
+    {
         return $out ? $out($request, $response) : $response;
     }
 
