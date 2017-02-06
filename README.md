@@ -62,6 +62,54 @@ $rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBacked
 );
 ```
 
+Whitelisting requests:
+
+```php
+use RateLimit\RequestsPerWindowRateLimiterFactory;
+use Psr\Http\Message\RequestInterface;
+
+$rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter(
+    [
+      'host' => '10.0.0.7',
+      'port' => 6379,
+    ],
+    [
+      'limit' => 1000,
+      'window' => 3600,
+      'whitelist' => function (RequestInterface $request) {
+          if (false !== strpos($request->getUri()->getPath(), 'admin')) {
+              return true;
+          }
+          
+          return false;
+      },
+    ]
+);
+```
+
+Custom limit exceeded handler:
+
+```php
+use RateLimit\RequestsPerWindowRateLimiterFactory;
+use Zend\Diactoros\Response\JsonResponse;
+
+$rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter(
+    [
+      'host' => '10.0.0.7',
+      'port' => 6379,
+    ],
+    [
+      'limit' => 1000,
+      'window' => 3600,
+      'limitExceededHandler' => function (RequestInterface $request) {
+          return new JsonResponse([
+              'message' => 'API rate limit exceeded',
+          ], 429);
+      },
+    ]
+);
+```
+
 ## Author
 
 **Nikola Poša**
