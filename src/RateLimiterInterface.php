@@ -12,20 +12,15 @@ declare(strict_types=1);
 
 namespace RateLimit;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
 interface RateLimiterInterface
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param callable $out
+     * @param string $identity
      *
-     * @return ResponseInterface|null
+     * @return RateLimit
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response, callable $out = null);
+    public function hit(string $identity);
 }
