@@ -10,11 +10,19 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\Options;
+namespace RateLimit\Middleware\Identity;
+
+use Psr\Http\Message\RequestInterface;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-interface OptionsInterface
+interface IdentityResolverInterface
 {
+    /**
+     * @param RequestInterface $request
+     *
+     * @return string
+     */
+    public function getIdentity(RequestInterface $request) : string;
 }

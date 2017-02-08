@@ -10,19 +10,20 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\Identity;
+namespace RateLimit\Middleware\Identity;
 
 use Psr\Http\Message\RequestInterface;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-interface IdentityResolverInterface
+abstract class AbstractIdentityResolver implements IdentityResolverInterface
 {
-    /**
-     * @param RequestInterface $request
-     *
-     * @return string
-     */
-    public function getIdentity(RequestInterface $request) : string;
+    protected static function getDefaultIdentity(RequestInterface $request) : string
+    {
+        return sha1(implode('|', [
+            $request->getMethod(),
+            $request->getUri()->getPath(),
+        ]));
+    }
 }

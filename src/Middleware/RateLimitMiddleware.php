@@ -10,19 +10,19 @@
 
 declare(strict_types=1);
 
-namespace RateLimit;
+namespace RateLimit\Middleware;
 
+use RateLimit\Exception\RateLimitExceededException;
+use RateLimit\RateLimiterInterface;
+use RateLimit\Middleware\Identity\IdentityResolverInterface;
+use RateLimit\Middleware\Identity\IpAddressIdentityResolver;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use RateLimit\Storage\StorageInterface;
-use RateLimit\Identity\IdentityResolverInterface;
-use RateLimit\Options\RequestsPerWindowOptions;
-use RateLimit\Exception\StorageValueNotFoundException;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
+final class RateLimitMiddleware
 {
     const LIMIT_EXCEEDED_HTTP_STATUS_CODE = 429; //HTTP 429 "Too Many Requests" (RFC 6585)
 
@@ -31,7 +31,17 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     const HEADER_RESET = 'X-RateLimit-Reset';
 
     /**
-     * @var RequestsPerWindowOptions
+     * @var RateLimiterInterface
+     */
+    private $rateLimiter;
+
+    /**
+     * @var IdentityResolverInterface
+     */
+    private $identityResolver;
+
+    /**
+     * @var Options
      */
     private $options;
 
@@ -40,11 +50,20 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
      */
     private $identity;
 
-    public function __construct(StorageInterface $storage, IdentityResolverInterface $identityResolver, RequestsPerWindowOptions $options)
+    public function __construct(RateLimiterInterface $rateLimiter, IdentityResolverInterface $identityResolver, Options $options)
     {
-        parent::__construct($storage, $identityResolver);
-        
+        $this->rateLimiter = $rateLimiter;
+        $this->identityResolver = $identityResolver;
         $this->options = $options;
+    }
+
+    public static function createDefault(RateLimiterInterface $rateLimiter, array $options = [])
+    {
+        return new self(
+            $rateLimiter,
+            new IpAddressIdentityResolver(),
+            Options::fromArray($options)
+        );
     }
 
     /**
@@ -52,57 +71,31 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, callable $out = null)
     {
-        if ($this->whitelist($request)) {
+        if ($this->isWhitelisted($request)) {
             return $this->next($request, $response, $out);
         }
 
-        $this->resolveIdentity($request);
+        $this->identity = $this->resolveIdentity($request);
 
         try {
-            $current = $this->getCurrent();
+            $this->rateLimiter->hit($this->identity);
 
-            if ($this->isLimitExceeded($current)) {
-                return $this->onLimitExceeded($request, $response);
-            }
-
-            $this->hit();
-        } catch (StorageValueNotFoundException $ex) {
-            $this->initialHit();
+            return $this->onBelowLimit($request, $response, $out);
+        } catch (RateLimitExceededException $ex) {
+            return $this->onLimitExceeded($request, $response);
         }
-
-        return $this->onBelowLimit($request, $response, $out);
     }
 
-    private function whitelist(RequestInterface $request) : bool
+    private function isWhitelisted(RequestInterface $request) : bool
     {
         $whitelist = $this->options->getWhitelist();
 
         return $whitelist($request);
     }
 
-    private function resolveIdentity(RequestInterface $request)
+    private function resolveIdentity(RequestInterface $request) : string
     {
-        $this->identity = $this->identityResolver->getIdentity($request);
-    }
-
-    private function getCurrent() : int
-    {
-        return $this->storage->get($this->identity);
-    }
-
-    private function isLimitExceeded($current) : bool
-    {
-        return ($current >= $this->options->getLimit());
-    }
-
-    private function initialHit()
-    {
-        $this->storage->set($this->identity, 1, $this->options->getWindow());
-    }
-
-    private function hit()
-    {
-        $this->storage->increment($this->identity, 1);
+        return $this->identityResolver->getIdentity($request);
     }
 
     private function onLimitExceeded(RequestInterface $request, ResponseInterface $response) : ResponseInterface
@@ -133,9 +126,9 @@ final class RequestsPerWindowRateLimiter extends AbstractRateLimiter
     private function setRateLimitHeaders(ResponseInterface $response) : ResponseInterface
     {
         return $response
-            ->withHeader(self::HEADER_LIMIT, (string) $this->options->getLimit())
-            ->withHeader(self::HEADER_REMAINING, (string) ($this->options->getLimit() - $this->getCurrent()))
-            ->withHeader(self::HEADER_RESET, (string) (time() + $this->storage->ttl($this->identity)))
+            ->withHeader(self::HEADER_LIMIT, (string) $this->rateLimiter->getLimit())
+            ->withHeader(self::HEADER_REMAINING, (string) $this->rateLimiter->getRemainingAttempts($this->identity))
+            ->withHeader(self::HEADER_RESET, (string) $this->rateLimiter->getResetAt($this->identity))
         ;
     }
 }

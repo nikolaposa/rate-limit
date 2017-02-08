@@ -10,18 +10,18 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\Tests\Storage;
+namespace RateLimit\Tests;
 
-use RateLimit\Storage\StorageInterface;
-use RateLimit\Storage\InMemoryStorage;
+use RateLimit\RateLimiterInterface;
+use RateLimit\InMemoryRateLimiter;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class InMemoryStorageTest extends StorageTest
+class InMemoryRateLimiterTest extends RateLimiterTest
 {
-    protected function getStorage() : StorageInterface
+    protected function getRateLimiter(int $limit, int $window) : RateLimiterInterface
     {
-        return new InMemoryStorage();
+        return new InMemoryRateLimiter($limit, $window);
     }
 }

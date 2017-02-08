@@ -17,13 +17,24 @@ use RuntimeException;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class StorageValueNotFoundException extends RuntimeException implements ExceptionInterface
+class RateLimitExceededException extends RuntimeException implements ExceptionInterface
 {
+    /**
+     * @var string
+     */
+    protected $key;
+
     public static function forKey(string $key)
     {
-        return new self(sprintf(
-            "'%s' was not found in storage",
-            $key
-        ));
+        $exception = new static('Rate limit exceeded');
+
+        $exception->key = $key;
+
+        return $exception;
+    }
+
+    public function getKey() : string
+    {
+        return $this->key;
     }
 }

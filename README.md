@@ -6,7 +6,7 @@
 [![Latest Stable Version](https://poser.pugx.org/nikolaposa/rate-limit/v/stable)](https://packagist.org/packages/nikolaposa/rate-limit)
 [![PDS Skeleton](https://img.shields.io/badge/pds-skeleton-blue.svg)](https://github.com/php-pds/skeleton)
 
-Rate limiting middleware designed for API and/or other application endpoints. Although it's framework-agnostic, it can be used with any framework that supports the middleware concept.
+Component that facilitates rate-limiting functionality. Although designed as a standalone, it also provides a middleware designed for API and/or other application endpoints that be used with any framework that supports the middleware concept.
 
 ## Installation
 
@@ -17,49 +17,54 @@ command to install the latest version of a package and add it to your project's 
 composer require nikolaposa/rate-limit
 ```
 
-## Rate Limit strategies
+## Usage
 
-This package supports creating different rate limiting strategies based on the `RateLimit\RateLimiterInterface` interface. Yet some default strategies are already provided and ready to use:
-
-**RequestsPerWindowRateLimiter**
-
-This implementation does rate limiting based on specified number of requests per time window (number of seconds).
-
-Zend Expressive usage example:
+Standalone:
 
 ```php
-$app = \Zend\Expressive\AppFactory::create();
+$rateLimiter = \RateLimit\RateLimiterFactory::createInMemoryRateLimiter(1000, 3600);
 
-$app->pipe(\RateLimit\RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
-    'limit' => 1000,
-    'window' => 3600,
-]));
-```
+$rateLimiter->hit('key');
 
-Slim usage example:
-
-```php
-$app = new \Slim\App();
-
-$app->add(\RateLimit\RequestsPerWindowRateLimiterFactory::createInMemoryRateLimiter([
-  'limit' => 1000,
-  'window' => 3600,
-]));
+echo $rateLimit->getLimit(); //1000
+echo $rateLimit->getWindow(); //3600
+echo $rateLimit->getRemainingAttempts(); //999
+echo $rateLimit->getResetAt(); //1486503558
 ```
 
 **Note**: in-memory rate limiter should only be used for testing purposes. This package also provides Redis-backed rate limiter:
 
 ```php
-$rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter(
-    [
-      'host' => '10.0.0.7',
-      'port' => 6379,
-    ],
-    [
-      'limit' => 1000,
-      'window' => 3600,
-    ]
-);
+$rateLimiter = \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+    'host' => '10.0.0.7',
+    'port' => 6379,
+], 1000, 3600);
+```
+
+Zend Expressive example:
+
+```php
+$app = \Zend\Expressive\AppFactory::create();
+
+$app->pipe(\RateLimit\Middleware\RateLimitMiddleware::createDefault(
+   \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+       'host' => '10.0.0.7',
+       'port' => 6379,
+   ], 1000, 3600)
+));
+```
+
+Slim example:
+
+```php
+$app = new \Slim\App();
+
+$app->add(\RateLimit\Middleware\RateLimitMiddleware::createDefault(
+    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+       'host' => '10.0.0.7',
+       'port' => 6379,
+   ], 1000, 3600)
+));
 ```
 
 Whitelisting requests:
@@ -68,21 +73,19 @@ Whitelisting requests:
 use RateLimit\RequestsPerWindowRateLimiterFactory;
 use Psr\Http\Message\RequestInterface;
 
-$rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter(
+$rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
+   \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+        'host' => '10.0.0.7',
+        'port' => 6379,
+    ], 1000, 3600),
     [
-      'host' => '10.0.0.7',
-      'port' => 6379,
-    ],
-    [
-      'limit' => 1000,
-      'window' => 3600,
-      'whitelist' => function (RequestInterface $request) {
-          if (false !== strpos($request->getUri()->getPath(), 'admin')) {
-              return true;
-          }
-          
-          return false;
-      },
+        'whitelist' => function (RequestInterface $request) {
+           if (false !== strpos($request->getUri()->getPath(), 'admin')) {
+               return true;
+           }
+         
+           return false;
+        },
     ]
 );
 ```
@@ -93,19 +96,17 @@ Custom limit exceeded handler:
 use RateLimit\RequestsPerWindowRateLimiterFactory;
 use Zend\Diactoros\Response\JsonResponse;
 
-$rateLimiter = \RateLimit\RequestsPerWindowRateLimiterFactory::createRedisBackedRateLimiter(
+$rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
+    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+        'host' => '10.0.0.7',
+        'port' => 6379,
+    ], 1000, 3600),
     [
-      'host' => '10.0.0.7',
-      'port' => 6379,
-    ],
-    [
-      'limit' => 1000,
-      'window' => 3600,
-      'limitExceededHandler' => function (RequestInterface $request) {
-          return new JsonResponse([
-              'message' => 'API rate limit exceeded',
-          ], 429);
-      },
+        'limitExceededHandler' => function (RequestInterface $request) {
+           return new JsonResponse([
+               'message' => 'API rate limit exceeded',
+           ], 429);
+       },
     ]
 );
 ```
