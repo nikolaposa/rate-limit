@@ -10,11 +10,11 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\Tests\Identity;
+namespace RateLimit\Tests\Middleware\Identity;
 
 use PHPUnit_Framework_TestCase;
-use RateLimit\Identity\IdentityResolverInterface;
-use RateLimit\Identity\IpAddressIdentityResolver;
+use RateLimit\Middleware\Identity\IdentityResolverInterface;
+use RateLimit\Middleware\Identity\IpAddressIdentityResolver;
 use Zend\Diactoros\ServerRequestFactory;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Request;

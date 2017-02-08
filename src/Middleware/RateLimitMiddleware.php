@@ -13,9 +13,9 @@ declare(strict_types=1);
 namespace RateLimit\Middleware;
 
 use RateLimit\Exception\RateLimitExceededException;
-use RateLimit\Identity\IpAddressIdentityResolver;
 use RateLimit\RateLimiterInterface;
-use RateLimit\Identity\IdentityResolverInterface;
+use RateLimit\Middleware\Identity\IdentityResolverInterface;
+use RateLimit\Middleware\Identity\IpAddressIdentityResolver;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

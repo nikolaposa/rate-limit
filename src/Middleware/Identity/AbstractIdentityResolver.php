@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\Identity;
+namespace RateLimit\Middleware\Identity;
 
 use Psr\Http\Message\RequestInterface;
 
