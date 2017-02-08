@@ -10,69 +10,45 @@
 
 declare(strict_types=1);
 
-namespace RateLimit\Storage;
-
-use RateLimit\Exception\StorageValueNotFoundException;
+namespace RateLimit;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-final class InMemoryStorage implements StorageInterface
+final class InMemoryRateLimiter extends AbstractRateLimiter
 {
     /**
      * @var array
      */
     protected $store = [];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get(string $key)
+    protected function get(string $key, int $default) : int
     {
         if (
             !$this->has($key)
             || $this->hasExpired($key)
         ) {
-            throw StorageValueNotFoundException::forKey($key);
+            return $default;
         }
 
-        return $this->store[$key]['data'];
+        return $this->store[$key]['current'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function set(string $key, $value, int $ttl)
+    protected function init(string $key)
     {
         $this->store[$key] = [
-            'data' => $value,
-            'expires' => time() + $ttl,
+            'current' => 0,
+            'expires' => time() + $this->window,
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment(string $key, int $by)
+    protected function increment(string $key)
     {
-        if (!isset($this->store[$key])) {
-            $this->store[$key] = [
-                'data' => 0,
-            ];
-        }
-
-        $this->store[$key]['data'] += $by;
+        $this->store[$key]['current']++;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function ttl(string $key) : int
+    protected function ttl(string $key) : int
     {
-        if (!isset($this->store[$key]['expires'])) {
-            return -1;
-        }
-
         return max($this->store[$key]['expires'] - time(), 0);
     }
 

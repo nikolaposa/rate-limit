@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace RateLimit;
 
-use RateLimit\Storage\InMemoryStorage;
-use RateLimit\Storage\RedisStorage;
 use Redis;
 
 /**
@@ -26,11 +24,7 @@ final class RateLimiterFactory
 
     public static function createInMemoryRateLimiter(int $limit = self::DEFAULT_LIMIT, int $window = self::DEFAULT_WINDOW) : RateLimiterInterface
     {
-        return new DefaultRateLimiter(
-            new InMemoryStorage(),
-            $limit,
-            $window
-        );
+        return new InMemoryRateLimiter($limit, $window);
     }
 
     public static function createRedisBackedRateLimiter(array $redisOptions = [], int $limit = self::DEFAULT_LIMIT, int $window = self::DEFAULT_WINDOW) : RateLimiterInterface
@@ -45,10 +39,6 @@ final class RateLimiterFactory
 
         $redis->connect($redisOptions['host'], $redisOptions['port'], $redisOptions['timeout']);
 
-        return new DefaultRateLimiter(
-            new RedisStorage($redis),
-            $limit,
-            $window
-        );
+        return new RedisRateLimiter($redis, $limit, $window);
     }
 }

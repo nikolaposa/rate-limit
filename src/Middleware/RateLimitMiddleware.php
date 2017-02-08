@@ -16,7 +16,6 @@ use RateLimit\Exception\RateLimitExceededException;
 use RateLimit\Identity\IpAddressIdentityResolver;
 use RateLimit\RateLimiterInterface;
 use RateLimit\Identity\IdentityResolverInterface;
-use RateLimit\Status;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -47,9 +46,9 @@ final class RateLimitMiddleware
     private $options;
 
     /**
-     * @var Status
+     * @var string
      */
-    private $status;
+    private $identity;
 
     public function __construct(RateLimiterInterface $rateLimiter, IdentityResolverInterface $identityResolver, Options $options)
     {
@@ -76,15 +75,13 @@ final class RateLimitMiddleware
             return $this->next($request, $response, $out);
         }
 
-        $identity = $this->resolveIdentity($request);
+        $this->identity = $this->resolveIdentity($request);
 
         try {
-            $this->status = $this->rateLimiter->hit($identity);
+            $this->rateLimiter->hit($this->identity);
 
             return $this->onBelowLimit($request, $response, $out);
         } catch (RateLimitExceededException $ex) {
-            $this->status = $ex->getStatus();
-
             return $this->onLimitExceeded($request, $response);
         }
     }
@@ -129,9 +126,9 @@ final class RateLimitMiddleware
     private function setRateLimitHeaders(ResponseInterface $response) : ResponseInterface
     {
         return $response
-            ->withHeader(self::HEADER_LIMIT, (string) $this->status->getLimit())
-            ->withHeader(self::HEADER_REMAINING, (string) $this->status->getRemainingAttempts())
-            ->withHeader(self::HEADER_RESET, (string) $this->status->getResetAt())
+            ->withHeader(self::HEADER_LIMIT, (string) $this->rateLimiter->getLimit())
+            ->withHeader(self::HEADER_REMAINING, (string) $this->rateLimiter->getRemainingAttempts($this->identity))
+            ->withHeader(self::HEADER_RESET, (string) $this->rateLimiter->getResetAt($this->identity))
         ;
     }
 }

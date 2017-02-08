@@ -24,13 +24,12 @@ Standalone:
 ```php
 $rateLimiter = \RateLimit\RateLimiterFactory::createInMemoryRateLimiter(1000, 3600);
 
-$rateLimit = $rateLimiter->hit('key');
+$rateLimiter->hit('key');
 
-echo $rateLimit->getIdentity(); //'key'
 echo $rateLimit->getLimit(); //1000
+echo $rateLimit->getWindow(); //3600
 echo $rateLimit->getRemainingAttempts(); //999
 echo $rateLimit->getResetAt(); //1486503558
-var_dump($rateLimit->isExceeded()); //false
 ```
 
 **Note**: in-memory rate limiter should only be used for testing purposes. This package also provides Redis-backed rate limiter:

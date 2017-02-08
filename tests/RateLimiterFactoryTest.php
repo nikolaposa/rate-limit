@@ -14,7 +14,8 @@ namespace RateLimit\Tests;
 
 use PHPUnit_Framework_TestCase;
 use RateLimit\RateLimiterFactory;
-use RateLimit\DefaultRateLimiter;
+use RateLimit\InMemoryRateLimiter;
+use RateLimit\RedisRateLimiter;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -28,7 +29,7 @@ class RateLimiterFactoryTest extends PHPUnit_Framework_TestCase
     {
         $rateLimiter = RateLimiterFactory::createInMemoryRateLimiter();
 
-        $this->assertInstanceOf(DefaultRateLimiter::class, $rateLimiter);
+        $this->assertInstanceOf(InMemoryRateLimiter::class, $rateLimiter);
     }
 
     /**
@@ -38,7 +39,7 @@ class RateLimiterFactoryTest extends PHPUnit_Framework_TestCase
     {
         $rateLimiter = RateLimiterFactory::createRedisBackedRateLimiter();
 
-        $this->assertInstanceOf(DefaultRateLimiter::class, $rateLimiter);
+        $this->assertInstanceOf(RedisRateLimiter::class, $rateLimiter);
     }
 
     /**
@@ -50,6 +51,6 @@ class RateLimiterFactoryTest extends PHPUnit_Framework_TestCase
             'timeout' => 2.5,
         ]);
 
-        $this->assertInstanceOf(DefaultRateLimiter::class, $rateLimiter);
+        $this->assertInstanceOf(RedisRateLimiter::class, $rateLimiter);
     }
 }

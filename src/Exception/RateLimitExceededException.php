@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace RateLimit\Exception;
 
 use RuntimeException;
-use RateLimit\Status;
 
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
@@ -25,17 +24,11 @@ class RateLimitExceededException extends RuntimeException implements ExceptionIn
      */
     protected $key;
 
-    /**
-     * @var Status
-     */
-    protected $status;
-
-    public static function forKeyAndStatus(string $key, Status $status)
+    public static function forKey(string $key)
     {
         $exception = new static('Rate limit exceeded');
 
         $exception->key = $key;
-        $exception->status = $status;
 
         return $exception;
     }
@@ -43,10 +36,5 @@ class RateLimitExceededException extends RuntimeException implements ExceptionIn
     public function getKey() : string
     {
         return $this->key;
-    }
-
-    public function getStatus() : Status
-    {
-        return $this->status;
     }
 }
