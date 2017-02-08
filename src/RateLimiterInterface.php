@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace RateLimit;
 
+use RateLimit\Exception\RateLimitExceededException;
+
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
@@ -19,6 +21,8 @@ interface RateLimiterInterface
 {
     /**
      * @param string $key
+     *
+     * @throws RateLimitExceededException
      *
      * @return RateLimit
      */

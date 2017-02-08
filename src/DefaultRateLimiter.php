@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace RateLimit;
 
+use RateLimit\Exception\RateLimitExceededException;
 use RateLimit\Storage\StorageInterface;
 use RateLimit\Exception\StorageValueNotFoundException;
 
@@ -48,29 +49,35 @@ class DefaultRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @param string $key
-     *
-     * @return RateLimit
+     * {@inheritdoc}
      */
     public function hit(string $key)
     {
         $this->key = $key;
 
-        try {
-            $current = $this->getCurrent();
+        $current = $this->getCurrent();
 
-            $this->increment();
+        $rateLimit = $this->createRateLimit($current);
+
+        if ($rateLimit->isExceeded()) {
+            throw RateLimitExceededException::forKeyAndRateLimit($key, $rateLimit);
+        }
+
+        $this->increment();
+
+        return $rateLimit;
+    }
+
+    private function getCurrent() : int
+    {
+        try {
+            $current = $this->storage->get($this->key);
         } catch (StorageValueNotFoundException $ex) {
             $current = 1;
             $this->init();
         }
 
-        return $this->createRateLimit($current);
-    }
-
-    private function getCurrent() : int
-    {
-        return $this->storage->get($this->key);
+        return $current;
     }
 
     private function init()

@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace RateLimit\Middleware;
 
+use RateLimit\Exception\RateLimitExceededException;
 use RateLimit\Identity\IpAddressIdentityResolver;
 use RateLimit\RateLimiterInterface;
 use RateLimit\Identity\IdentityResolverInterface;
@@ -88,13 +89,15 @@ class RateLimitMiddleware
 
         $identity = $this->resolveIdentity($request);
 
-        $this->rateLimit = $this->rateLimiter->hit($identity);
+        try {
+            $this->rateLimit = $this->rateLimiter->hit($identity);
 
-        if ($this->rateLimit->isExceeded()) {
+            return $this->onBelowLimit($request, $response, $out);
+        } catch (RateLimitExceededException $ex) {
+            $this->rateLimit = $ex->getRateLimit();
+
             return $this->onLimitExceeded($request, $response);
         }
-
-        return $this->onBelowLimit($request, $response, $out);
     }
 
     private function isWhitelisted(RequestInterface $request) : bool

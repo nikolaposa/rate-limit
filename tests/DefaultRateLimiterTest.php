@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace RateLimit\Tests;
 
 use PHPUnit_Framework_TestCase;
+use RateLimit\Exception\RateLimitExceededException;
 use RateLimit\RateLimiterFactory;
 
 /**
@@ -55,18 +56,24 @@ class DefaultRateLimiterTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_creates_exceeded_rate_limit_when_limit_is_reached()
+    public function it_raises_exception_when_limit_is_reached()
     {
         $rateLimiter = RateLimiterFactory::createInMemoryRateLimiter(1, 3600);
 
         $rateLimiter->hit('test');
 
-        $rateLimit = $rateLimiter->hit('test');
+        try {
+            $rateLimiter->hit('test');
+        } catch (RateLimitExceededException $ex) {
+            $key = $ex->getKey();
+            $rateLimit = $ex->getRateLimit();
 
-        $this->assertEquals(5, $rateLimit->getLimit());
-        $this->assertEquals(0, $rateLimit->getRemainingAttempts());
-        $this->assertGreaterThan(0, $rateLimit->getResetAt());
-        $this->assertTrue($rateLimit->isExceeded());
+            $this->assertEquals('test', $key);
+            $this->assertEquals(5, $rateLimit->getLimit());
+            $this->assertEquals(0, $rateLimit->getRemainingAttempts());
+            $this->assertGreaterThan(0, $rateLimit->getResetAt());
+            $this->assertTrue($rateLimit->isExceeded());
+        }
     }
 
     /**
@@ -78,9 +85,12 @@ class DefaultRateLimiterTest extends PHPUnit_Framework_TestCase
 
         $rateLimiter->hit('test');
 
-        $rateLimit = $rateLimiter->hit('test');
+        try {
+            $rateLimiter->hit('test');
 
-        $this->assertTrue($rateLimit->isExceeded());
+            $this->fail('Limit should be exceeded');
+        } catch (RateLimitExceededException $ex) {
+        }
 
         sleep(2);
 
