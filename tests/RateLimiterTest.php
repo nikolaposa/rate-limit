@@ -113,10 +113,10 @@ abstract class RateLimiterTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_normalizes_reset_at_if_key_has_no_hits()
+    public function it_provides_reset_at_if_key_has_no_hits()
     {
         $rateLimiter = $this->getRateLimiter(5, 3600);
-        
-        $this->assertEquals(0, $rateLimiter->getResetAt('test'));
+
+        $this->assertGreaterThan(0, $rateLimiter->getResetAt('test'));
     }
 }

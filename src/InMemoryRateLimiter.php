@@ -37,7 +37,7 @@ final class InMemoryRateLimiter extends AbstractRateLimiter
     protected function init(string $key)
     {
         $this->store[$key] = [
-            'current' => 0,
+            'current' => 1,
             'expires' => time() + $this->window,
         ];
     }
@@ -49,6 +49,10 @@ final class InMemoryRateLimiter extends AbstractRateLimiter
 
     protected function ttl(string $key) : int
     {
+        if (!isset($this->store[$key])) {
+            return 0;
+        }
+
         return max($this->store[$key]['expires'] - time(), 0);
     }
 

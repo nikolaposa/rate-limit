@@ -44,7 +44,7 @@ final class RedisRateLimiter extends AbstractRateLimiter
 
     protected function init(string $key)
     {
-        $this->redis->setex($key, $this->window, 0);
+        $this->redis->setex($key, $this->window, 1);
     }
 
     protected function increment(string $key)

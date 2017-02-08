@@ -63,7 +63,7 @@ abstract class AbstractRateLimiter implements RateLimiterInterface
     {
         $current = $this->getCurrent($key);
 
-        if ($current > $this->limit) {
+        if ($current >= $this->limit) {
             throw RateLimitExceededException::forKey($key);
         }
 
