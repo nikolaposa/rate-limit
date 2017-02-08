@@ -48,7 +48,10 @@ Zend Expressive example:
 $app = \Zend\Expressive\AppFactory::create();
 
 $app->pipe(\RateLimit\Middleware\RateLimitMiddleware::createDefault(
-   \RateLimit\RateLimiterFactory::createInMemoryRateLimiter(1000, 3600)
+   \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+       'host' => '10.0.0.7',
+       'port' => 6379,
+   ], 1000, 3600)
 ));
 ```
 
@@ -58,7 +61,10 @@ Slim example:
 $app = new \Slim\App();
 
 $app->add(\RateLimit\Middleware\RateLimitMiddleware::createDefault(
-    \RateLimit\RateLimiterFactory::createInMemoryRateLimiter(1000, 3600)
+    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+       'host' => '10.0.0.7',
+       'port' => 6379,
+   ], 1000, 3600)
 ));
 ```
 
@@ -69,21 +75,19 @@ use RateLimit\RequestsPerWindowRateLimiterFactory;
 use Psr\Http\Message\RequestInterface;
 
 $rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
-    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter(
-        [
-            'host' => '10.0.0.7',
-            'port' => 6379,
-        ], 
-        1000, 
-        3600
-    ),
-    function (RequestInterface $request) {
-        if (false !== strpos($request->getUri()->getPath(), 'admin')) {
-            return true;
-        }
-      
-        return false;
-    }
+   \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+        'host' => '10.0.0.7',
+        'port' => 6379,
+    ], 1000, 3600),
+    [
+        'whitelist' => function (RequestInterface $request) {
+           if (false !== strpos($request->getUri()->getPath(), 'admin')) {
+               return true;
+           }
+         
+           return false;
+        },
+    ]
 );
 ```
 
@@ -94,20 +98,17 @@ use RateLimit\RequestsPerWindowRateLimiterFactory;
 use Zend\Diactoros\Response\JsonResponse;
 
 $rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
-    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter(
-        [
-            'host' => '10.0.0.7',
-            'port' => 6379,
-        ], 
-        1000, 
-        3600
-    ),
-    null,
-    function (RequestInterface $request) {
-        return new JsonResponse([
-            'message' => 'API rate limit exceeded',
-        ], 429);
-    }
+    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
+        'host' => '10.0.0.7',
+        'port' => 6379,
+    ], 1000, 3600),
+    [
+        'limitExceededHandler' => function (RequestInterface $request) {
+           return new JsonResponse([
+               'message' => 'API rate limit exceeded',
+           ], 429);
+       },
+    ]
 );
 ```
 

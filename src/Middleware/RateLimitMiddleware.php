@@ -23,7 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class RateLimitMiddleware
+final class RateLimitMiddleware
 {
     const LIMIT_EXCEEDED_HTTP_STATUS_CODE = 429; //HTTP 429 "Too Many Requests" (RFC 6585)
 
@@ -42,39 +42,28 @@ class RateLimitMiddleware
     private $identityResolver;
 
     /**
-     * @var callable
+     * @var Options
      */
-    private $whitelist;
-
-    /**
-     * @var callable
-     */
-    protected $limitExceededHandler;
+    private $options;
 
     /**
      * @var RateLimit
      */
     private $rateLimit;
 
-    public function __construct(RateLimiterInterface $rateLimiter, IdentityResolverInterface $identityResolver, callable $whitelist, callable $limitExceededHandler)
+    public function __construct(RateLimiterInterface $rateLimiter, IdentityResolverInterface $identityResolver, Options $options)
     {
         $this->rateLimiter = $rateLimiter;
         $this->identityResolver = $identityResolver;
-        $this->whitelist = $whitelist;
-        $this->limitExceededHandler = $limitExceededHandler;
+        $this->options = $options;
     }
 
-    public static function createDefault(RateLimiterInterface $rateLimiter, callable $whitelist = null, callable $limitExceededHandler = null)
+    public static function createDefault(RateLimiterInterface $rateLimiter, array $options = [])
     {
         return new self(
             $rateLimiter,
             new IpAddressIdentityResolver(),
-            $whitelist ?: function (RequestInterface $request) {
-                return false;
-            },
-            $limitExceededHandler ?: function (RequestInterface $request, ResponseInterface $response) {
-                return $response;
-            }
+            Options::fromArray($options)
         );
     }
 
@@ -102,7 +91,7 @@ class RateLimitMiddleware
 
     private function isWhitelisted(RequestInterface $request) : bool
     {
-        $whitelist = $this->whitelist;
+        $whitelist = $this->options->getWhitelist();
 
         return $whitelist($request);
     }
@@ -119,7 +108,7 @@ class RateLimitMiddleware
             ->withStatus(self::LIMIT_EXCEEDED_HTTP_STATUS_CODE)
         ;
 
-        $limitExceededHandler = $this->limitExceededHandler;
+        $limitExceededHandler = $this->options->getLimitExceededHandler();
         $response = $limitExceededHandler($request, $response);
 
         return $response;

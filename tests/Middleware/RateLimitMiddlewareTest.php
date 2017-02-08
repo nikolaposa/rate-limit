@@ -129,10 +129,11 @@ class RateLimitMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $rateLimitMiddleware = RateLimitMiddleware::createDefault(
             RateLimiterFactory::createInMemoryRateLimiter(1, 3600),
-            null,
-            function (RequestInterface $request, ResponseInterface $response) {
-                return new JsonResponse(['message' => 'Too many requests'], $response->getStatusCode());
-            }
+            [
+                'limitExceededHandler' => function (RequestInterface $request, ResponseInterface $response) {
+                    return new JsonResponse(['message' => 'Too many requests'], $response->getStatusCode());
+                }
+            ]
         );
 
         $rateLimitMiddleware(new Request(), new Response());
@@ -152,9 +153,11 @@ class RateLimitMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $rateLimitMiddleware = RateLimitMiddleware::createDefault(
             RateLimiterFactory::createInMemoryRateLimiter(1, 3600),
-            function (RequestInterface $request) {
-                return true;
-            }
+            [
+                'whitelist' => function (RequestInterface $request) {
+                    return true;
+                },
+            ]
         );
 
         $rateLimitMiddleware(new Request(), new Response('php://memory', 200));
