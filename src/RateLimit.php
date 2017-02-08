@@ -18,11 +18,6 @@ namespace RateLimit;
 class RateLimit
 {
     /**
-     * @var string
-     */
-    protected $identity;
-
-    /**
      * @var int
      */
     protected $limit;
@@ -37,17 +32,11 @@ class RateLimit
      */
     protected $ttl;
 
-    public function __construct(string $identity, int $limit, int $current, int $ttl)
+    public function __construct(int $limit, int $current, int $ttl)
     {
-        $this->identity = $identity;
         $this->limit = $limit;
         $this->current = $current;
         $this->ttl = $ttl;
-    }
-
-    public function getIdentity() : string
-    {
-        return $this->identity;
     }
 
     public function getLimit() : int

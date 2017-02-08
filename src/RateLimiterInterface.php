@@ -18,9 +18,9 @@ namespace RateLimit;
 interface RateLimiterInterface
 {
     /**
-     * @param string $identity
+     * @param string $key
      *
      * @return RateLimit
      */
-    public function hit(string $identity);
+    public function hit(string $key);
 }

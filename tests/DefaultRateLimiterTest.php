@@ -29,7 +29,6 @@ class DefaultRateLimiterTest extends PHPUnit_Framework_TestCase
 
         $rateLimit = $rateLimiter->hit('test');
 
-        $this->assertEquals('test', $rateLimit->getIdentity());
         $this->assertEquals(5, $rateLimit->getLimit());
         $this->assertEquals(4, $rateLimit->getRemainingAttempts());
         $this->assertGreaterThan(0, $rateLimit->getResetAt());
@@ -47,7 +46,6 @@ class DefaultRateLimiterTest extends PHPUnit_Framework_TestCase
 
         $rateLimit = $rateLimiter->hit('test');
 
-        $this->assertEquals('test', $rateLimit->getIdentity());
         $this->assertEquals(5, $rateLimit->getLimit());
         $this->assertEquals(3, $rateLimit->getRemainingAttempts());
         $this->assertGreaterThan(0, $rateLimit->getResetAt());
@@ -65,7 +63,6 @@ class DefaultRateLimiterTest extends PHPUnit_Framework_TestCase
 
         $rateLimit = $rateLimiter->hit('test');
 
-        $this->assertEquals('test', $rateLimit->getIdentity());
         $this->assertEquals(5, $rateLimit->getLimit());
         $this->assertEquals(0, $rateLimit->getRemainingAttempts());
         $this->assertGreaterThan(0, $rateLimit->getResetAt());

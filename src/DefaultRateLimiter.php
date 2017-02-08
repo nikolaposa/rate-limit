@@ -38,7 +38,7 @@ class DefaultRateLimiter implements RateLimiterInterface
     /**
      * @var string
      */
-    protected $identity;
+    protected $key;
 
     public function __construct(StorageInterface $storage, int $limit, int $window)
     {
@@ -48,13 +48,13 @@ class DefaultRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @param string $identity
+     * @param string $key
      *
      * @return RateLimit
      */
-    public function hit(string $identity)
+    public function hit(string $key)
     {
-        $this->identity = $identity;
+        $this->key = $key;
 
         try {
             $current = $this->getCurrent();
@@ -70,26 +70,25 @@ class DefaultRateLimiter implements RateLimiterInterface
 
     private function getCurrent() : int
     {
-        return $this->storage->get($this->identity);
+        return $this->storage->get($this->key);
     }
 
     private function init()
     {
-        $this->storage->set($this->identity, 1, $this->window);
+        $this->storage->set($this->key, 1, $this->window);
     }
 
     private function increment()
     {
-        $this->storage->increment($this->identity, 1);
+        $this->storage->increment($this->key, 1);
     }
 
     private function createRateLimit(int $current) : RateLimit
     {
         return new RateLimit(
-            $this->identity,
             $this->limit,
             $current,
-            $this->storage->ttl($this->identity)
+            $this->storage->ttl($this->key)
         );
     }
 }
