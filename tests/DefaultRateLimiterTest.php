@@ -69,7 +69,7 @@ class DefaultRateLimiterTest extends PHPUnit_Framework_TestCase
             $rateLimit = $ex->getRateLimit();
 
             $this->assertEquals('test', $key);
-            $this->assertEquals(5, $rateLimit->getLimit());
+            $this->assertEquals(1, $rateLimit->getLimit());
             $this->assertEquals(0, $rateLimit->getRemainingAttempts());
             $this->assertGreaterThan(0, $rateLimit->getResetAt());
             $this->assertTrue($rateLimit->isExceeded());
