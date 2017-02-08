@@ -15,7 +15,7 @@ namespace RateLimit;
 /**
  * @author Nikola Posa <posa.nikola@gmail.com>
  */
-class RateLimit
+class Status
 {
     /**
      * @var int

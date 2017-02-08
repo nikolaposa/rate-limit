@@ -66,7 +66,7 @@ class DefaultRateLimiterTest extends PHPUnit_Framework_TestCase
             $rateLimiter->hit('test');
         } catch (RateLimitExceededException $ex) {
             $key = $ex->getKey();
-            $rateLimit = $ex->getRateLimit();
+            $rateLimit = $ex->getStatus();
 
             $this->assertEquals('test', $key);
             $this->assertEquals(1, $rateLimit->getLimit());

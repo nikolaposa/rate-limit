@@ -57,10 +57,10 @@ class DefaultRateLimiter implements RateLimiterInterface
 
         $current = $this->getCurrent();
 
-        $rateLimit = $this->createRateLimit($current);
+        $rateLimit = $this->createStatus($current);
 
         if ($rateLimit->isExceeded()) {
-            throw RateLimitExceededException::forKeyAndRateLimit($key, $rateLimit);
+            throw RateLimitExceededException::forKeyAndStatus($key, $rateLimit);
         }
 
         $this->increment();
@@ -90,9 +90,9 @@ class DefaultRateLimiter implements RateLimiterInterface
         $this->storage->increment($this->key, 1);
     }
 
-    private function createRateLimit(int $current) : RateLimit
+    private function createStatus(int $current) : Status
     {
-        return new RateLimit(
+        return new Status(
             $this->limit,
             $current,
             $this->storage->ttl($this->key)

@@ -24,7 +24,7 @@ interface RateLimiterInterface
      *
      * @throws RateLimitExceededException
      *
-     * @return RateLimit
+     * @return Status
      */
     public function hit(string $key);
 }
