@@ -63,10 +63,6 @@ final class InMemoryRateLimiter extends AbstractRateLimiter
 
     private function hasExpired(string $key) : bool
     {
-        if (!isset($this->store[$key]['expires'])) {
-            return false;
-        }
-
         return time() > $this->store[$key]['expires'];
     }
 }
