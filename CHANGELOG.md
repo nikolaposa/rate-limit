@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.4.0 - [Unreleased][Unreleased]
+## 0.4.0 - 2017-02-09
 
 ### Changed
 - [4: Standalone rate limiter](https://github.com/nikolaposa/rate-limit/pull/4)
