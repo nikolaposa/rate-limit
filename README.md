@@ -19,17 +19,17 @@ composer require nikolaposa/rate-limit
 
 ## Usage
 
-Standalone:
+### Standalone
 
 ```php
 $rateLimiter = \RateLimit\RateLimiterFactory::createInMemoryRateLimiter(1000, 3600);
 
 $rateLimiter->hit('key');
 
-echo $rateLimit->getLimit(); //1000
-echo $rateLimit->getWindow(); //3600
-echo $rateLimit->getRemainingAttempts(); //999
-echo $rateLimit->getResetAt(); //1486503558
+echo $rateLimiter->getLimit(); //1000
+echo $rateLimiter->getWindow(); //3600
+echo $rateLimiter->getRemainingAttempts('key'); //999
+echo $rateLimiter->getResetAt('key'); //1486503558
 ```
 
 **Note**: in-memory rate limiter should only be used for testing purposes. This package also provides Redis-backed rate limiter:
@@ -40,6 +40,8 @@ $rateLimiter = \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
     'port' => 6379,
 ], 1000, 3600);
 ```
+
+### Middleware
 
 Zend Expressive example:
 
@@ -70,7 +72,6 @@ $app->add(\RateLimit\Middleware\RateLimitMiddleware::createDefault(
 Whitelisting requests:
 
 ```php
-use RateLimit\RequestsPerWindowRateLimiterFactory;
 use Psr\Http\Message\RequestInterface;
 
 $rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
@@ -93,7 +94,7 @@ $rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
 Custom limit exceeded handler:
 
 ```php
-use RateLimit\RequestsPerWindowRateLimiterFactory;
+use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
 $rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
