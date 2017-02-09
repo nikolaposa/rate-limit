@@ -24,10 +24,11 @@ composer require nikolaposa/rate-limit
 ```php
 $rateLimiter = \RateLimit\RateLimiterFactory::createInMemoryRateLimiter(1000, 3600);
 
-$rateLimiter->hit('key');
-
 echo $rateLimiter->getLimit(); //1000
 echo $rateLimiter->getWindow(); //3600
+
+$rateLimiter->hit('key');
+
 echo $rateLimiter->getRemainingAttempts('key'); //999
 echo $rateLimiter->getResetAt('key'); //1486503558
 ```
@@ -107,7 +108,7 @@ $rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
            return new JsonResponse([
                'message' => 'API rate limit exceeded',
            ], 429);
-       },
+        },
     ]
 );
 ```
