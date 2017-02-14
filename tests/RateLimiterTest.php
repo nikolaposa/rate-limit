@@ -68,10 +68,10 @@ abstract class RateLimiterTest extends PHPUnit_Framework_TestCase
             $rateLimiter->hit('test');
 
             $this->fail('Limit should be exceeded');
-        } catch (RateLimitExceededException $ex) {
-            $key = $ex->getKey();
-
-            $this->assertEquals('test', $key);
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(RateLimitExceededException::class, $ex);
+            /* @var $ex RateLimitExceededException */
+            $this->assertEquals('test', $ex->getKey());
         }
     }
 
