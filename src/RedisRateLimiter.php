@@ -54,6 +54,6 @@ final class RedisRateLimiter extends AbstractRateLimiter
 
     protected function ttl(string $key) : int
     {
-        return max((int) $this->redis->ttl($key), 0);
+        return max((int) ceil($this->redis->pttl($key) / 1000), 0);
     }
 }
