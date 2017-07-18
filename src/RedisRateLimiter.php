@@ -50,6 +50,9 @@ final class RedisRateLimiter extends AbstractRateLimiter
     protected function increment(string $key)
     {
         $this->redis->incr($key);
+        if($this->ttl($key) === 0) {
+            $this->init($key);
+        }
     }
 
     protected function ttl(string $key) : int
