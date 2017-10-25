@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.1 - 2017-10-25
+
+### Fixed
+- [6: Fix X-RateLimit-Remaining wave issue](https://github.com/nikolaposa/rate-limit/pull/6)
+
 ## 1.0.0 - 2017-02-14
 
 ## 0.4.0 - 2017-02-09
