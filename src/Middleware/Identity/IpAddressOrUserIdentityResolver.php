@@ -28,9 +28,15 @@ final class IpAddressOrUserIdentityResolver extends AbstractIdentityResolver
      */
     protected $loadBalancers;
 
-    public function __construct(array $loadBalancers = [])
+    /**
+     * @var string
+     */
+    protected $authKeyName;
+
+    public function __construct(array $loadBalancers = [], string authKeyName = 'authUserId')
     {
         $this->loadBalancers = $loadBalancers;
+        $this->authKeyName   = $authKeyName;
     }
 
     /**
@@ -43,7 +49,7 @@ final class IpAddressOrUserIdentityResolver extends AbstractIdentityResolver
         }
 
         $serverParams = $request->getServerParams();
-        $authUserId   = $request->getAttribute('authUserId');
+        $authUserId   = $request->getAttribute($this->authKeyName);
 
         if ( !empty($authUserId) ) {
             return USER_KEY_PREFIX . $authUserId;
