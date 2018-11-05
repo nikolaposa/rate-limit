@@ -52,8 +52,15 @@ final class RedisRateLimiter extends AbstractRateLimiter
         $this->redis->incr($key);
     }
 
-    protected function ttl(string $key) : int
+    protected function ttl(string $key) : float
     {
-        return max((int) ceil($this->redis->pttl($key) / 1000), 0);
+        $ttl = $this->redis->pttl($key);
+        if ( $ttl===-1 ) {
+            // The key was created without an expiration date
+            $this->redis->expire($key, $this->window);
+            $ttl = $this->window*1000;
+        }
+
+        return max($ttl / 1000, 0.0);
     }
 }
