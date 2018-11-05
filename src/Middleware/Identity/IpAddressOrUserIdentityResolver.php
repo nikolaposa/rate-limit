@@ -33,7 +33,7 @@ final class IpAddressOrUserIdentityResolver extends AbstractIdentityResolver
      */
     protected $authKeyName;
 
-    public function __construct(array $loadBalancers = [], string authKeyName = 'authUserId')
+    public function __construct(array $loadBalancers = [], string $authKeyName = 'authUserId')
     {
         $this->loadBalancers = $loadBalancers;
         $this->authKeyName   = $authKeyName;
