@@ -55,7 +55,7 @@ final class RedisRateLimiter extends AbstractRateLimiter
     protected function ttl(string $key) : int
     {
         $ttl = $this->redis->pttl($key);
-        if ( $ttl===-1 ) {
+        if ($ttl === -1) {
             $this->redis->expire($key, $this->window);
             $ttl = $this->window*1000;
         }
