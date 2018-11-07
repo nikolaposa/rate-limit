@@ -88,7 +88,7 @@ abstract class AbstractRateLimiter implements RateLimiterInterface
      */
     public function getResetAt(string $key) : int
     {
-        return time() + $this->ttl($key);
+        return (int)ceil(microtime(true) + $this->ttl($key))
     }
 
     protected function getCurrent(string $key) : int
@@ -102,5 +102,5 @@ abstract class AbstractRateLimiter implements RateLimiterInterface
 
     abstract protected function increment(string $key);
 
-    abstract protected function ttl(string $key) : int;
+    abstract protected function ttl(string $key) : float;
 }
