@@ -51,11 +51,11 @@ final class IpAddressOrUserIdentityResolver extends AbstractIdentityResolver
         $serverParams = $request->getServerParams();
         $authUserId   = $request->getAttribute($this->authKeyName);
 
-        if ( !empty($authUserId) ) {
+        if (!empty($authUserId)) {
             return self::USER_KEY_PREFIX . $authUserId;
         }
 
-        if ( !empty($serverParams['REMOTE_ADDR']) && in_array($serverParams['REMOTE_ADDR'], $this->loadBalancers) ) {
+        if (!empty($serverParams['REMOTE_ADDR']) && in_array($serverParams['REMOTE_ADDR'], $this->loadBalancers)) {
             if (array_key_exists('HTTP_CLIENT_IP', $serverParams)) {
                 return self::IP_KEY_PREFIX . $serverParams['HTTP_CLIENT_IP'];
             }
@@ -65,6 +65,7 @@ final class IpAddressOrUserIdentityResolver extends AbstractIdentityResolver
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ? (self::IP_KEY_PREFIX . $serverParams['REMOTE_ADDR']) : self::getDefaultIdentity($request);
+        return $serverParams['REMOTE_ADDR'] ?
+            (self::IP_KEY_PREFIX . $serverParams['REMOTE_ADDR']) : self::getDefaultIdentity($request);
     }
 }
