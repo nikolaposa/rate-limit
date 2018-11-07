@@ -47,7 +47,7 @@ final class InMemoryRateLimiter extends AbstractRateLimiter
         $this->store[$key]['current']++;
     }
 
-    protected function ttl(string $key) : int
+    protected function ttl(string $key) : float
     {
         if (!isset($this->store[$key])) {
             return 0;
