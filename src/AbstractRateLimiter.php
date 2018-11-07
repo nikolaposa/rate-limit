@@ -43,6 +43,14 @@ abstract class AbstractRateLimiter implements RateLimiterInterface
     /**
      * {@inheritdoc}
      */
+    public function setLimit(int $limit)
+    {
+        $this->limit = $limit;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getLimit() : int
     {
         return $this->limit;

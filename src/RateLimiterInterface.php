@@ -20,6 +20,13 @@ use RateLimit\Exception\RateLimitExceededException;
 interface RateLimiterInterface
 {
     /**
+     * @param int $limit
+     *
+     * @return void
+     */
+    public function setLimit(int $limit);
+
+    /**
      * @return int
      */
     public function getLimit() : int;
