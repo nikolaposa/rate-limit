@@ -28,7 +28,7 @@ final class RedisRateLimiter implements RateLimiter
         $current = (int) $this->redis->get($key);
 
         if ($current <= $quotaPolicy->getQuota()) {
-            $this->redis->incr($key);
+            $current = $this->redis->incr($key);
 
             if ($current === 1) {
                 $this->redis->expire($key, $quotaPolicy->getInterval());
