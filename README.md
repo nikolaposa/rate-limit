@@ -78,3 +78,7 @@ $server->listen(function ($req, $res) {
 ## License
 
 Released under MIT License - see the [License File](LICENSE) for details.
+
+
+[link-author]: https://github.com/nikolaposa
+[link-contributors]: ../../contributors
