@@ -1,12 +1,12 @@
 {
     "name": "nikolaposa/rate-limit",
-    "description": "General-purpose rate limiter implementation. Also featuring PSR-15 middleware suitable for APIs.",
+    "description": "General-purpose rate limiter implementation. Also features PSR-15 middleware suitable for APIs.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "rate limit",
         "redis",
-        "psr15",
+        "psr-15",
         "middleware"
     ],
     "authors": [
