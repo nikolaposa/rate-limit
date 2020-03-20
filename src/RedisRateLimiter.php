@@ -48,7 +48,7 @@ final class RedisRateLimiter implements RateLimiter
         return "{$this->keyPrefix}:{$interval}:$identifier";
     }
 
-    private function ttl(string $key) : int
+    private function ttl(string $key): int
     {
         return max((int) ceil($this->redis->pttl($key) / 1000), 0);
     }
