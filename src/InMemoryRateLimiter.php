@@ -1,68 +1,34 @@
 <?php
-/**
- * This file is part of the Rate Limit package.
- *
- * Copyright (c) Nikola Posa
- *
- * For full copyright and license information, please refer to the LICENSE file,
- * located at the package root folder.
- */
 
 declare(strict_types=1);
 
 namespace RateLimit;
 
-/**
- * @author Nikola Posa <posa.nikola@gmail.com>
- */
-final class InMemoryRateLimiter extends AbstractRateLimiter
+use DateTimeImmutable;
+
+final class InMemoryRateLimiter implements RateLimiter
 {
-    /**
-     * @var array
-     */
-    protected $store = [];
+    /** @var array */
+    private $store = [];
 
-    protected function get(string $key, int $default) : int
+    public function handle(string $identifier, QuotaPolicy $quotaPolicy): Status
     {
-        if (
-            !$this->has($key)
-            || $this->hasExpired($key)
-        ) {
-            return $default;
-        }
+        $key = "$identifier:{$quotaPolicy->getInterval()}:" . floor(time() / $quotaPolicy->getInterval());
 
-        return $this->store[$key]['current'];
-    }
-
-    protected function init(string $key)
-    {
-        $this->store[$key] = [
-            'current' => 1,
-            'expires' => time() + $this->window,
-        ];
-    }
-
-    protected function increment(string $key)
-    {
-        $this->store[$key]['current']++;
-    }
-
-    protected function ttl(string $key) : int
-    {
         if (!isset($this->store[$key])) {
-            return 0;
+            $this->store[$key] = [
+                'current' => 1,
+                'expires' => time() + $quotaPolicy->getInterval(),
+            ];
+        } elseif ($this->store[$key]['current'] <= $quotaPolicy->getQuota()) {
+            $this->store[$key]['current']++;
         }
 
-        return max($this->store[$key]['expires'] - time(), 0);
-    }
-
-    private function has(string $key) : bool
-    {
-        return array_key_exists($key, $this->store);
-    }
-
-    private function hasExpired(string $key) : bool
-    {
-        return time() > $this->store[$key]['expires'];
+        return Status::from(
+            $identifier,
+            $this->store[$key]['current'],
+            $quotaPolicy,
+            new DateTimeImmutable('@' . $this->store[$key]['expires'])
+        );
     }
 }

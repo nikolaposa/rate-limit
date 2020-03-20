@@ -1,0 +1,13 @@
+parameters:
+    level: 7
+    paths:
+        - src
+        - tests
+    checkMissingIterableValueType: false
+    ignoreErrors:
+        - '~Method [a-zA-Z0-9\\_]+::from[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
+        - '~Method [a-zA-Z0-9\\_]+QuotaPolicy::[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
+
+includes:
+    - vendor/phpstan/phpstan-beberlei-assert/extension.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon

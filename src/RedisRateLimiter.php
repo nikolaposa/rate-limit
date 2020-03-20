@@ -1,65 +1,55 @@
 <?php
-/**
- * This file is part of the Rate Limit package.
- *
- * Copyright (c) Nikola Posa
- *
- * For full copyright and license information, please refer to the LICENSE file,
- * located at the package root folder.
- */
 
 declare(strict_types=1);
 
 namespace RateLimit;
 
+use DateTimeImmutable;
 use Redis;
 
-/**
- * @author Nikola Posa <posa.nikola@gmail.com>
- */
-final class RedisRateLimiter extends AbstractRateLimiter
+final class RedisRateLimiter implements RateLimiter
 {
-    /**
-     * @var Redis
-     */
+    /** @var Redis */
     private $redis;
 
-    public function __construct(Redis $redis, int $limit, int $window)
+    /** @var string */
+    private $keyPrefix;
+
+    public function __construct(Redis $redis, string $keyPrefix = '')
     {
         $this->redis = $redis;
-
-        parent::__construct($limit, $window);
+        $this->keyPrefix = $keyPrefix;
     }
 
-    protected function get(string $key, int $default) : int
+    public function handle(string $identifier, QuotaPolicy $quotaPolicy): Status
     {
-        $value = $this->redis->get($key);
+        $key = $this->key($identifier, $quotaPolicy->getInterval());
 
-        if (false === $value) {
-            return $default;
+        $current = (int) $this->redis->get($key);
+
+        if ($current <= $quotaPolicy->getQuota()) {
+            $this->redis->incr($key);
+
+            if ($current === 1) {
+                $this->redis->expire($key, $quotaPolicy->getInterval());
+            }
         }
 
-        return (int) $value;
+        return Status::from(
+            $identifier,
+            $current,
+            $quotaPolicy,
+            (new DateTimeImmutable())->modify('+' . $this->ttl($key) . ' seconds')
+        );
     }
 
-    protected function init(string $key)
+    private function key(string $identifier, int $interval): string
     {
-        $this->redis->setex($key, $this->window, 1);
+        return "{$this->keyPrefix}:{$interval}:$identifier";
     }
 
-    protected function increment(string $key)
+    private function ttl(string $key) : int
     {
-        $this->redis->incr($key);
-    }
-
-    protected function ttl(string $key) : int
-    {
-        $ttl = $this->redis->pttl($key);
-        if ($ttl === -1) {
-            $this->redis->expire($key, $this->window);
-            $ttl = $this->window*1000;
-        }
-
-        return max((int) ceil($ttl / 1000), 0);
+        return max((int) ceil($this->redis->pttl($key) / 1000), 0);
     }
 }

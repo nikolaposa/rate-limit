@@ -1,35 +1,31 @@
-sudo: false
-
 language: php
+sudo: false
 
 cache:
   directories:
     - $HOME/.composer/cache
-    - vendor
 
-matrix:
-  include:
-    - php: 7
-      env:
-        - EXECUTE_CS_CHECK=true
-        - EXECUTE_TEST_COVERALLS=true
-    - php: 7.1
-    - php: hhvm
-  allow_failures:
-    - php: hhvm
-
-services:
-  - redis-server
-
-before_install:
-  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then phpenv config-add ./tests/build/php.ini; fi;
+php:
+  - 7.2
+  - 7.3
+  - 7.4
 
 install:
   - travis_retry composer install --no-interaction
 
-script:
-  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/phpunit --disallow-test-output --report-useless-tests --coverage-clover ./clover.xml ; else ./vendor/bin/phpunit --disallow-test-output ; fi
-  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
+script: ./vendor/bin/phpunit
 
-after_script:
-  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./clover.xml ; fi
+jobs:
+  include:
+    - stage: Static analysis
+      script: vendor/bin/phpstan analyse
+
+    - stage: Coding standards
+      script: ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
+
+    - stage: Code coverage
+      script:
+        - ./vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml
+      after_script:
+        - wget https://scrutinizer-ci.com/ocular.phar
+        - php ocular.phar code-coverage:upload --format=php-clover clover.xml

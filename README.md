@@ -19,107 +19,62 @@ composer require nikolaposa/rate-limit
 
 ## Usage
 
-### Standalone
+### General purpose
 
 ```php
-$rateLimiter = \RateLimit\RateLimiterFactory::createInMemoryRateLimiter(1000, 3600);
+use RateLimit\RedisRateLimiter;
+use Redis;
 
-echo $rateLimiter->getLimit(); //1000
-echo $rateLimiter->getWindow(); //3600
+$rateLimiter = new RedisRateLimiter(new Redis());
 
-$rateLimiter->hit('key');
+$apiKey = 'abc123';
+$status = $rateLimiter->handle($apiKey, QuotaPolicy::perMinute(100));
 
-echo $rateLimiter->getRemainingAttempts('key'); //999
-echo $rateLimiter->getResetAt('key'); //1486503558
-```
-
-**Note**: in-memory rate limiter should only be used for testing purposes. This package also provides Redis-backed rate limiter:
-
-```php
-$rateLimiter = \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
-    'host' => '10.0.0.7',
-    'port' => 6379,
-], 1000, 3600);
+echo $status->getRemainingAttempts(); //99
 ```
 
 ### Middleware
 
-Zend Expressive example:
+**Laminas**
 
 ```php
-$app = \Zend\Expressive\AppFactory::create();
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Server;
+use Laminas\Stratigility\Middleware\NotFoundHandler;
+use Laminas\Stratigility\MiddlewarePipe;
+use RateLimit\Http\RateLimitMiddleware;
+use RateLimit\RedisRateLimiter;
+use Redis;
 
-$app->pipe(\RateLimit\Middleware\RateLimitMiddleware::createDefault(
-   \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
-       'host' => '10.0.0.7',
-       'port' => 6379,
-   ], 1000, 3600)
-));
-```
-
-Slim example:
-
-```php
-$app = new \Slim\App();
-
-$app->add(\RateLimit\Middleware\RateLimitMiddleware::createDefault(
-    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
-       'host' => '10.0.0.7',
-       'port' => 6379,
-   ], 1000, 3600)
-));
-```
-
-Whitelisting requests:
-
-```php
-use Psr\Http\Message\RequestInterface;
-
-$rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
-   \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
-        'host' => '10.0.0.7',
-        'port' => 6379,
-    ], 1000, 3600),
-    [
-        'whitelist' => function (RequestInterface $request) {
-           if (false !== strpos($request->getUri()->getPath(), 'admin')) {
-               return true;
-           }
-         
-           return false;
-        },
-    ]
+$rateLimitMiddleware = new RateLimitMiddleware(
+    new RedisRateLimiter(new Redis()),
+    new GetQuotaPolicyViaPathPatternMap([
+        '|/api/posts|' => QuotaPolicy::perMinute(3),
+        '|/api/users|' => QuotaPolicy::perSecond(1),
+    ]),
+    new ResolveIdentifierFromIpAddress(),
+    new class implements RequestHandlerInterface {
+        public function handle(ServerRequestInterface $request): ResponseInterface
+        {
+            return new JsonResponse(['error' => 'Too many requests']);
+        }
+    }
 );
+
+$app = new MiddlewarePipe();
+$app->pipe($rateLimitMiddleware);
+
+$server = Server::createServer([$app, 'handle'], $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+$server->listen(function ($req, $res) {
+    return $res;
+});
 ```
 
-Custom limit exceeded handler:
+## Credits
 
-```php
-use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response\JsonResponse;
+- [Nikola Poša][link-author]
+- [All Contributors][link-contributors]
 
-$rateLimitMiddleware = \RateLimit\Middleware\RateLimitMiddleware::createDefault(
-    \RateLimit\RateLimiterFactory::createRedisBackedRateLimiter([
-        'host' => '10.0.0.7',
-        'port' => 6379,
-    ], 1000, 3600),
-    [
-        'limitExceededHandler' => function (RequestInterface $request) {
-           return new JsonResponse([
-               'message' => 'API rate limit exceeded',
-           ], 429);
-        },
-    ]
-);
-```
+## License
 
-## Author
-
-**Nikola Poša**
-
-* https://twitter.com/nikolaposa
-* https://github.com/nikolaposa
-
-## Copyright and license
-
-Copyright 2017 Nikola Poša. Released under MIT License - see the `LICENSE` file for details.
+Released under MIT License - see the [License File](LICENSE) for details.

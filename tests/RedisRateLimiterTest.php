@@ -1,27 +1,16 @@
 <?php
-/**
- * This file is part of the Rate Limit package.
- *
- * Copyright (c) Nikola Posa
- *
- * For full copyright and license information, please refer to the LICENSE file,
- * located at the package root folder.
- */
 
 declare(strict_types=1);
 
 namespace RateLimit\Tests;
 
-use RateLimit\RateLimiterInterface;
+use RateLimit\RateLimiter;
 use RateLimit\RedisRateLimiter;
 use Redis;
 
-/**
- * @author Nikola Posa <posa.nikola@gmail.com>
- */
 class RedisRateLimiterTest extends RateLimiterTest
 {
-    protected function getRateLimiter(int $limit, int $window) : RateLimiterInterface
+    protected function getRateLimiter(): RateLimiter
     {
         $redis = new Redis();
 
@@ -33,6 +22,6 @@ class RedisRateLimiterTest extends RateLimiterTest
 
         $redis->flushDB();
 
-        return new RedisRateLimiter($redis, $limit, $window);
+        return new RedisRateLimiter($redis);
     }
 }

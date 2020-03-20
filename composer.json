@@ -1,27 +1,42 @@
 {
     "name": "nikolaposa/rate-limit",
-    "description": "Standalone component that facilitates rate-limiting functionality. Also provides a middleware designed for API and/or other application endpoints.",
+    "description": "General-purpose rate limiter implementation. Also featuring PSR-15 middleware suitable for APIs.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "rate limit",
+        "redis",
+        "psr15",
         "middleware"
     ],
     "authors": [
         {
             "name": "Nikola Poša",
             "email": "posa.nikola@gmail.com",
-            "homepage": "http://www.nikolaposa.in.rs"
+            "homepage": "https://www.nikolaposa.in.rs"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "require": {
-        "php": "^7.0",
-        "psr/http-message": "^1.0"
+        "php": "^7.2",
+        "beberlei/assert": "^3.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.7 | ^5.0",
-        "friendsofphp/php-cs-fixer": "^2.0",
-        "zendframework/zend-diactoros": "^1.3"
+        "friendsofphp/php-cs-fixer": "^2.1",
+        "laminas/laminas-diactoros": "^2.2",
+        "phpstan/phpstan": "^0.12.10",
+        "phpstan/phpstan-beberlei-assert": "^0.12.2",
+        "phpstan/phpstan-phpunit": "^0.12.6",
+        "phpunit/phpunit": "^8.0",
+        "psr/http-message": "^1.0",
+        "psr/http-server-handler": "^1.0"
+    },
+    "suggest": {
+        "laminas/laminas-diactoros": "In order to use RateLimitMiddleware",
+        "psr/http-message": "In order to use RateLimitMiddleware",
+        "psr/http-server-handler": "In order to use RateLimitMiddleware"
     },
     "autoload": {
         "psr-4": {
@@ -33,13 +48,14 @@
             "RateLimit\\Tests\\": "tests/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
-        }
-    },
     "scripts": {
         "test": "phpunit --colors=always",
-        "cs-fix": "php-cs-fixer fix --config=.php_cs"
+        "cs-fix": "php-cs-fixer fix --config=.php_cs",
+        "stan": "phpstan analyse"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
     }
 }
