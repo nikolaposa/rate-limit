@@ -6,7 +6,8 @@
 [![Latest Stable Version](https://poser.pugx.org/nikolaposa/rate-limit/v/stable)](https://packagist.org/packages/nikolaposa/rate-limit)
 [![PDS Skeleton](https://img.shields.io/badge/pds-skeleton-blue.svg)](https://github.com/php-pds/skeleton)
 
-Component that facilitates rate-limiting functionality. Although designed as a standalone, it also provides a middleware designed for API and/or other application endpoints that be used with any framework that supports the middleware concept.
+
+General purpose rate limiter featuring implementation that uses Redis as backend. Also provides PSR-15 middleware suitable for API or other application endpoints.
 
 ## Installation
 
