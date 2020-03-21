@@ -84,7 +84,7 @@ class RateLimitMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function it_resets_quota_after_rate_interval(): void
+    public function it_resets_limit_after_rate_interval(): void
     {
         $this->rateLimitMiddleware->process($this->requestFactory->createServerRequest('POST', '/api/users'), $this->requestHandler);
         $this->rateLimitMiddleware->process($this->requestFactory->createServerRequest('POST', '/api/users'), $this->requestHandler);

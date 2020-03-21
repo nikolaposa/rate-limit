@@ -7,8 +7,8 @@ namespace RateLimit\Http;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RateLimit\RateLimiter;
 use Psr\Http\Message\ResponseInterface;
+use RateLimit\SilentRateLimiter;
 use RateLimit\Status;
 
 final class RateLimitMiddleware implements MiddlewareInterface
@@ -17,7 +17,7 @@ final class RateLimitMiddleware implements MiddlewareInterface
     public const HEADER_REMAINING = 'X-RateLimit-Remaining';
     public const HEADER_RESET = 'X-RateLimit-Reset';
 
-    /** @var RateLimiter */
+    /** @var SilentRateLimiter */
     private $rateLimiter;
 
     /** @var GetRate */
@@ -30,7 +30,7 @@ final class RateLimitMiddleware implements MiddlewareInterface
     private $limitExceededHandler;
 
     public function __construct(
-        RateLimiter $rateLimiter,
+        SilentRateLimiter $rateLimiter,
         GetRate $getRate,
         ResolveIdentifier $resolveIdentifier,
         RequestHandlerInterface $limitExceededHandler
@@ -51,9 +51,9 @@ final class RateLimitMiddleware implements MiddlewareInterface
 
         $identifier = $this->resolveIdentifier->fromRequest($request);
 
-        $status = $this->rateLimiter->handle($identifier, $rate);
+        $status = $this->rateLimiter->limitSilently($identifier, $rate);
 
-        if ($status->quotaExceeded()) {
+        if ($status->limitExceeded()) {
             return $this->setRateLimitHeaders($this->limitExceededHandler->handle($request), $status)
                 ->withStatus(429);
         }
@@ -64,7 +64,7 @@ final class RateLimitMiddleware implements MiddlewareInterface
     private function setRateLimitHeaders(ResponseInterface $response, Status $rateLimitStatus): ResponseInterface
     {
         return $response
-            ->withHeader(self::HEADER_LIMIT, (string) $rateLimitStatus->getQuota())
+            ->withHeader(self::HEADER_LIMIT, (string) $rateLimitStatus->getLimit())
             ->withHeader(self::HEADER_REMAINING, (string) $rateLimitStatus->getRemainingAttempts())
             ->withHeader(self::HEADER_RESET, (string) $rateLimitStatus->getResetAt()->getTimestamp());
     }

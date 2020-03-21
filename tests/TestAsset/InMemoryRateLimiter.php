@@ -5,25 +5,43 @@ declare(strict_types=1);
 namespace RateLimit\Tests\TestAsset;
 
 use DateTimeImmutable;
+use RateLimit\Exception\LimitExceeded;
 use RateLimit\Rate;
 use RateLimit\RateLimiter;
+use RateLimit\SilentRateLimiter;
 use RateLimit\Status;
 
-final class InMemoryRateLimiter implements RateLimiter
+final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
 {
     /** @var array */
     private $store = [];
 
-    public function handle(string $identifier, Rate $rate): Status
+    public function limit(string $identifier, Rate $rate): void
     {
-        $key = "$identifier:{$rate->getInterval()}";
+        $key = "$identifier:{$rate->getInterval()}:" . floor(time() / $rate->getInterval());
 
-        if (!isset($this->store[$key]) || time() > $this->store[$key]['expires']) {
+        if (!isset($this->store[$key])) {
             $this->store[$key] = [
                 'current' => 1,
-                'expires' => time() + $rate->getInterval(),
+                'reset_at' => time() + $rate->getInterval(),
             ];
-        } elseif ($this->store[$key]['current'] <= $rate->getQuota()) {
+        } elseif ($this->store[$key]['current'] > $rate->getOperations()) {
+            throw LimitExceeded::for($identifier, $rate);
+        }
+
+        $this->store[$key]['current']++;
+    }
+
+    public function limitSilently(string $identifier, Rate $rate): Status
+    {
+        $key = "$identifier:{$rate->getInterval()}:" . floor(time() / $rate->getInterval());
+
+        if (!isset($this->store[$key])) {
+            $this->store[$key] = [
+                'current' => 1,
+                'reset_at' => time() + $rate->getInterval(),
+            ];
+        } elseif ($this->store[$key]['current'] <= $rate->getOperations()) {
             $this->store[$key]['current']++;
         }
 
@@ -31,7 +49,7 @@ final class InMemoryRateLimiter implements RateLimiter
             $identifier,
             $this->store[$key]['current'],
             $rate,
-            new DateTimeImmutable('@' . $this->store[$key]['expires'])
+            new DateTimeImmutable('@' . $this->store[$key]['reset_at'])
         );
     }
 }

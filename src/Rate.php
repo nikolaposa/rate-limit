@@ -9,38 +9,38 @@ use Assert\Assertion;
 class Rate
 {
     /** @var int */
-    protected $quota;
+    protected $operations;
 
     /** @var int */
     protected $interval;
 
-    final protected function __construct(int $quota, int $interval)
+    final protected function __construct(int $operations, int $interval)
     {
-        Assertion::greaterThan($quota, 0, 'Quota must be greater than zero');
+        Assertion::greaterThan($operations, 0, 'Quota must be greater than zero');
         Assertion::greaterThan($interval, 0, 'Seconds interval must be greater than zero');
 
-        $this->quota = $quota;
+        $this->operations = $operations;
         $this->interval = $interval;
     }
 
-    public static function perSecond(int $quota)
+    public static function perSecond(int $operations)
     {
-        return new static($quota, 1);
+        return new static($operations, 1);
     }
 
-    public static function perMinute(int $quota)
+    public static function perMinute(int $operations)
     {
-        return new static($quota, 60);
+        return new static($operations, 60);
     }
 
-    public static function perHour(int $quota)
+    public static function perHour(int $operations)
     {
-        return new static($quota, 3600);
+        return new static($operations, 3600);
     }
 
-    public function getQuota(): int
+    public function getOperations(): int
     {
-        return $this->quota;
+        return $this->operations;
     }
 
     public function getInterval(): int

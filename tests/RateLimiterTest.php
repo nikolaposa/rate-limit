@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace RateLimit\Tests;
 
 use PHPUnit\Framework\TestCase;
+use RateLimit\Exception\LimitExceeded;
 use RateLimit\Rate;
 use RateLimit\RateLimiter;
+use RateLimit\SilentRateLimiter;
 
 abstract class RateLimiterTest extends TestCase
 {
@@ -15,27 +17,61 @@ abstract class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function it_maintains_number_of_remaining_attempts(): void
+    public function it_raises_exception_when_limit_is_exceeded(): void
     {
-        $status = $this->getRateLimiter()->handle('test', Rate::perMinute(10));
+        $rateLimiter = $this->getRateLimiter();
+        $identifier = 'test';
+        $rate = Rate::perHour(1);
 
-        $this->assertFalse($status->quotaExceeded());
-        $this->assertEquals(9, $status->getRemainingAttempts());
+        $rateLimiter->limit($identifier, $rate);
+
+        try {
+            $rateLimiter->limit($identifier, $rate);
+
+            $this->fail('Limit should have been reached');
+        } catch (LimitExceeded $exception) {
+            $this->assertSame("Limit of has been exceeded by identifier: $identifier", $exception->getMessage());
+            $this->assertSame($identifier, $exception->getIdentifier());
+            $this->assertSame($rate, $exception->getRate());
+        }
     }
 
     /**
      * @test
      */
-    public function it_returns_correct_status_when_quota_is_exceeded(): void
+    public function it_resets_limit_after_rate_interval(): void
     {
         $rateLimiter = $this->getRateLimiter();
+        $identifier = 'test';
+        $rate = Rate::perSecond(2);
+
+        $rateLimiter->limit($identifier, $rate);
+        $rateLimiter->limit($identifier, $rate);
+        sleep(2);
+        $rateLimiter->limit($identifier, $rate);
+        $rateLimiter->limit($identifier, $rate);
+        $rateLimiter->limit($identifier, $rate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_silently_returns_correct_status_when_limit_is_exceeded(): void
+    {
+        $rateLimiter = $this->getRateLimiter();
+
+        if (!$rateLimiter instanceof SilentRateLimiter) {
+            $this->markTestSkipped('RateLimiter not capable of silent limiting');
+        }
+
+        $identifier = 'test';
         $rate = Rate::perHour(1);
 
-        $rateLimiter->handle('test', $rate);
-        $rateLimiter->handle('test', $rate);
-        $status = $rateLimiter->handle('test', $rate);
+        $rateLimiter->limitSilently($identifier, $rate);
+        $rateLimiter->limitSilently($identifier, $rate);
+        $status = $rateLimiter->limitSilently($identifier, $rate);
 
-        $this->assertTrue($status->quotaExceeded());
+        $this->assertTrue($status->limitExceeded());
         $this->assertSame(2, $status->getCurrent());
         $this->assertSame(0, $status->getRemainingAttempts());
     }
@@ -43,18 +79,41 @@ abstract class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function it_resets_quota_after_rate_interval(): void
+    public function it_silently_tracks_number_of_remaining_attempts(): void
     {
         $rateLimiter = $this->getRateLimiter();
+
+        if (!$rateLimiter instanceof SilentRateLimiter) {
+            $this->markTestSkipped('RateLimiter not capable of silent limiting');
+        }
+
+        $status = $rateLimiter->limitSilently('test', Rate::perMinute(10));
+
+        $this->assertFalse($status->limitExceeded());
+        $this->assertEquals(9, $status->getRemainingAttempts());
+    }
+
+    /**
+     * @test
+     */
+    public function it_silently_resets_limit_after_rate_interval(): void
+    {
+        $rateLimiter = $this->getRateLimiter();
+
+        if (!$rateLimiter instanceof SilentRateLimiter) {
+            $this->markTestSkipped('RateLimiter not capable of silent limiting');
+        }
+
+        $identifier = 'test';
         $rate = Rate::perSecond(10);
 
-        $rateLimiter->handle('test', $rate);
-        $rateLimiter->handle('test', $rate);
-        $rateLimiter->handle('test', $rate);
+        $rateLimiter->limitSilently($identifier, $rate);
+        $rateLimiter->limitSilently($identifier, $rate);
+        $rateLimiter->limitSilently($identifier, $rate);
         sleep(2);
-        $status = $rateLimiter->handle('test', $rate);
+        $status = $rateLimiter->limitSilently($identifier, $rate);
 
-        $this->assertFalse($status->quotaExceeded());
+        $this->assertFalse($status->limitExceeded());
         $this->assertSame(9, $status->getRemainingAttempts());
     }
 }

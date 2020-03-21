@@ -25,7 +25,7 @@ class GetRateViaPathPatternMapTest extends TestCase
 
         $rate = $getRate->forRequest($request);
 
-        $this->assertSame(100, $rate->getQuota());
+        $this->assertSame(100, $rate->getOperations());
         $this->assertSame(60, $rate->getInterval());
     }
 

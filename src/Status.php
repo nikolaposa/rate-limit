@@ -43,9 +43,9 @@ class Status
         return $this->current;
     }
 
-    public function getQuota(): int
+    public function getLimit(): int
     {
-        return $this->rate->getQuota();
+        return $this->rate->getOperations();
     }
 
     public function getResetAt(): DateTimeImmutable
@@ -53,13 +53,13 @@ class Status
         return $this->resetAt;
     }
 
-    public function quotaExceeded(): bool
+    public function limitExceeded(): bool
     {
-        return $this->current > $this->getQuota();
+        return $this->current > $this->getLimit();
     }
 
     public function getRemainingAttempts(): int
     {
-        return max(0, $this->getQuota() - $this->current);
+        return max(0, $this->getLimit() - $this->current);
     }
 }
