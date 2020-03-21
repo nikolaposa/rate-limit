@@ -7,7 +7,9 @@
 [![PDS Skeleton](https://img.shields.io/badge/pds-skeleton-blue.svg)](https://github.com/php-pds/skeleton)
 
 
-General purpose rate limiter featuring implementation that uses Redis as backend. Also provides PSR-15 middleware suitable for API or other application endpoints.
+General purpose rate limiter that can be used to limit the rate at which certain operation can be performed. Default implementation uses Redis as backend.
+ 
+ This package also provides PSR-15 rate limiter middleware suitable for API or other application endpoints.
 
 ## Installation
 
