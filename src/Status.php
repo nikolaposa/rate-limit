@@ -11,26 +11,30 @@ class Status
     /** @var string */
     protected $identifier;
 
-    /** @var int */
-    protected $current;
+    /** @var bool */
+    protected $success;
 
-    /** @var Rate */
-    protected $rate;
+    /** @var int */
+    protected $limit;
+
+    /** @var int */
+    protected $remainingAttempts;
 
     /** @var DateTimeImmutable */
     protected $resetAt;
 
-    final protected function __construct(string $identifier, int $current, Rate $rate, DateTimeImmutable $resetAt)
+    final protected function __construct(string $identifier, bool $success, int $limit, int $remainingAttempts, DateTimeImmutable $resetAt)
     {
         $this->identifier = $identifier;
-        $this->current = $current;
-        $this->rate = $rate;
+        $this->success = $success;
+        $this->limit = $limit;
+        $this->remainingAttempts = $remainingAttempts;
         $this->resetAt = $resetAt;
     }
 
-    public static function from(string $identifier, int $current, Rate $rate, DateTimeImmutable $resetAt)
+    public static function from(string $identifier, int $current, int $limit, DateTimeImmutable $resetAt)
     {
-        return new static($identifier, $current, $rate, $resetAt);
+        return new static($identifier, $current <= $limit, $limit, max(0, $limit - $current), $resetAt);
     }
 
     public function getIdentifier(): string
@@ -38,28 +42,23 @@ class Status
         return $this->identifier;
     }
 
-    public function getCurrent(): int
+    public function limitExceeded(): bool
     {
-        return $this->current;
+        return !$this->success;
     }
 
     public function getLimit(): int
     {
-        return $this->rate->getOperations();
+        return $this->limit;
+    }
+
+    public function getRemainingAttempts(): int
+    {
+        return $this->remainingAttempts;
     }
 
     public function getResetAt(): DateTimeImmutable
     {
         return $this->resetAt;
-    }
-
-    public function limitExceeded(): bool
-    {
-        return $this->current > $this->getLimit();
-    }
-
-    public function getRemainingAttempts(): int
-    {
-        return max(0, $this->getLimit() - $this->current);
     }
 }

@@ -41,7 +41,7 @@ final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
         return Status::from(
             $identifier,
             $this->store[$key]['current'],
-            $rate,
+            $rate->getOperations(),
             new DateTimeImmutable('@' . $this->store[$key]['reset_at'])
         );
     }

@@ -28,7 +28,7 @@ final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
 
         $current = $this->getCurrent($key);
 
-        if ($current > $rate->getOperations()) {
+        if ($current >= $rate->getOperations()) {
             throw LimitExceeded::for($identifier, $rate);
         }
 
@@ -48,7 +48,7 @@ final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
         return Status::from(
             $identifier,
             $current,
-            $rate,
+            $rate->getOperations(),
             (new DateTimeImmutable())->modify('+' . $this->ttl($key) . ' seconds')
         );
     }

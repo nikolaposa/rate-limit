@@ -77,7 +77,6 @@ abstract class RateLimiterTest extends TestCase
         $status = $rateLimiter->limitSilently($identifier, $rate);
 
         $this->assertTrue($status->limitExceeded());
-        $this->assertSame(2, $status->getCurrent());
         $this->assertSame(0, $status->getRemainingAttempts());
     }
 
