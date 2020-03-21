@@ -55,7 +55,7 @@ final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
 
     private function key(string $identifier, int $interval): string
     {
-        return "{$this->keyPrefix}:{$interval}:$identifier";
+        return "{$this->keyPrefix}{$identifier}:$interval";
     }
 
     private function getCurrent(string $key): int
