@@ -22,6 +22,29 @@ composer require nikolaposa/rate-limit
 
 ### General purpose
 
+**Default rate limiting**
+
+```php
+use RateLimit\Exception\LimitExceeded;
+use RateLimit\Rate;
+use RateLimit\RedisRateLimiter;
+use Redis;
+
+$rateLimiter = new RedisRateLimiter(new Redis());
+
+$apiKey = 'abc123';
+
+try {
+    $rateLimiter->limit($apiKey, Rate::perMinute(100));
+    
+    //on success
+} catch (LimitExceeded $exception) {
+   //on limit exceeded
+}
+```
+
+**Silent rate limiting**
+
 ```php
 use RateLimit\Rate;
 use RateLimit\RedisRateLimiter;
@@ -30,7 +53,7 @@ use Redis;
 $rateLimiter = new RedisRateLimiter(new Redis());
 
 $apiKey = 'abc123';
-$status = $rateLimiter->handle($apiKey, Rate::perMinute(100));
+$status = $rateLimiter->limitSilently($apiKey, Rate::perMinute(100));
 
 echo $status->getRemainingAttempts(); //99
 ```
