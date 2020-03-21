@@ -1,5 +1,4 @@
 language: php
-sudo: false
 
 cache:
   directories:
@@ -11,7 +10,7 @@ php:
   - 7.4
 
 services:
-  - redis-server
+  - redis
 
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
