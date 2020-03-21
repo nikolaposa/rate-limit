@@ -16,8 +16,8 @@ class QuotaPolicy
 
     final protected function __construct(int $quota, int $interval)
     {
-        Assertion::greaterThan($quota, 0);
-        Assertion::greaterThan($interval, 0);
+        Assertion::greaterThan($quota, 0, 'Quota must be greater than zero');
+        Assertion::greaterThan($interval, 0, 'Seconds interval must be greater than zero');
 
         $this->quota = $quota;
         $this->interval = $interval;

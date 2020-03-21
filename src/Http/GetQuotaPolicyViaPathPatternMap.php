@@ -15,8 +15,8 @@ final class GetQuotaPolicyViaPathPatternMap implements GetQuotaPolicy
 
     public function __construct(array $pathPatternQuotaPolicyMap)
     {
-        Assertion::allString(array_keys($pathPatternQuotaPolicyMap));
-        Assertion::allIsInstanceOf($pathPatternQuotaPolicyMap, QuotaPolicy::class);
+        Assertion::allString(array_keys($pathPatternQuotaPolicyMap), 'Map keys must be string patterns');
+        Assertion::allIsInstanceOf($pathPatternQuotaPolicyMap, QuotaPolicy::class, 'Map values must be QuotaPolicy instances');
 
         $this->pathPatternQuotaPolicyMap = $pathPatternQuotaPolicyMap;
     }
