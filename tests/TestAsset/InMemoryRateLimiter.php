@@ -18,18 +18,11 @@ final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
 
     public function limit(string $identifier, Rate $rate): void
     {
-        $key = "$identifier:{$rate->getInterval()}:" . floor(time() / $rate->getInterval());
+        $status = $this->limitSilently($identifier, $rate);
 
-        if (!isset($this->store[$key])) {
-            $this->store[$key] = [
-                'current' => 1,
-                'reset_at' => time() + $rate->getInterval(),
-            ];
-        } elseif ($this->store[$key]['current'] > $rate->getOperations()) {
+        if ($status->limitExceeded()) {
             throw LimitExceeded::for($identifier, $rate);
         }
-
-        $this->store[$key]['current']++;
     }
 
     public function limitSilently(string $identifier, Rate $rate): Status
