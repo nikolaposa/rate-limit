@@ -43,14 +43,19 @@ abstract class RateLimiterTest extends TestCase
     {
         $rateLimiter = $this->getRateLimiter();
         $identifier = 'test';
-        $rate = Rate::perSecond(2);
+        $rate = Rate::perSecond(1);
 
-        $rateLimiter->limit($identifier, $rate);
         $rateLimiter->limit($identifier, $rate);
         sleep(2);
         $rateLimiter->limit($identifier, $rate);
-        $rateLimiter->limit($identifier, $rate);
-        $rateLimiter->limit($identifier, $rate);
+
+        try {
+            $rateLimiter->limit($identifier, $rate);
+
+            $this->fail('Limit should have been reached');
+        } catch (LimitExceeded $exception) {
+            $this->assertSame($identifier, $exception->getIdentifier());
+        }
     }
 
     /**
