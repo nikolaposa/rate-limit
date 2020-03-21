@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 ### Changed
-- Cleaner `RateLimiter` API; accepts identifier and `QuotaPolicy`, returns `Status`
+- Cleaner `RateLimiter` API; accepts identifier and `Rate`, returns `Status`
 - PSR-15 `RateLimitMiddleware`
 - PHPUnit 8 is now the minimum required version
 

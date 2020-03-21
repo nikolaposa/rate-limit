@@ -6,5 +6,5 @@ namespace RateLimit;
 
 interface RateLimiter
 {
-    public function handle(string $identifier, QuotaPolicy $quotaPolicy): Status;
+    public function handle(string $identifier, Rate $rate): Status;
 }

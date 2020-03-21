@@ -21,24 +21,24 @@ final class RedisRateLimiter implements RateLimiter
         $this->keyPrefix = $keyPrefix;
     }
 
-    public function handle(string $identifier, QuotaPolicy $quotaPolicy): Status
+    public function handle(string $identifier, Rate $rate): Status
     {
-        $key = $this->key($identifier, $quotaPolicy->getInterval());
+        $key = $this->key($identifier, $rate->getInterval());
 
         $current = (int) $this->redis->get($key);
 
-        if ($current <= $quotaPolicy->getQuota()) {
+        if ($current <= $rate->getQuota()) {
             $current = $this->redis->incr($key);
 
             if ($current === 1) {
-                $this->redis->expire($key, $quotaPolicy->getInterval());
+                $this->redis->expire($key, $rate->getInterval());
             }
         }
 
         return Status::from(
             $identifier,
             $current,
-            $quotaPolicy,
+            $rate,
             (new DateTimeImmutable())->modify('+' . $this->ttl($key) . ' seconds')
         );
     }

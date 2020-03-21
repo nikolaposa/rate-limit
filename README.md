@@ -23,13 +23,14 @@ composer require nikolaposa/rate-limit
 ### General purpose
 
 ```php
+use RateLimit\Rate;
 use RateLimit\RedisRateLimiter;
 use Redis;
 
 $rateLimiter = new RedisRateLimiter(new Redis());
 
 $apiKey = 'abc123';
-$status = $rateLimiter->handle($apiKey, QuotaPolicy::perMinute(100));
+$status = $rateLimiter->handle($apiKey, Rate::perMinute(100));
 
 echo $status->getRemainingAttempts(); //99
 ```
@@ -44,14 +45,15 @@ use Laminas\Diactoros\Server;
 use Laminas\Stratigility\Middleware\NotFoundHandler;
 use Laminas\Stratigility\MiddlewarePipe;
 use RateLimit\Http\RateLimitMiddleware;
+use RateLimit\Rate;
 use RateLimit\RedisRateLimiter;
 use Redis;
 
 $rateLimitMiddleware = new RateLimitMiddleware(
     new RedisRateLimiter(new Redis()),
-    new GetQuotaPolicyViaPathPatternMap([
-        '|/api/posts|' => QuotaPolicy::perMinute(3),
-        '|/api/users|' => QuotaPolicy::perSecond(1),
+    new GetRateViaPathPatternMap([
+        '|/api/posts|' => Rate::perMinute(3),
+        '|/api/users|' => Rate::perSecond(1),
     ]),
     new ResolveIdentifierFromIpAddress(),
     new class implements RequestHandlerInterface {

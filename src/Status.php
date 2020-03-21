@@ -14,23 +14,23 @@ class Status
     /** @var int */
     protected $current;
 
-    /** @var QuotaPolicy */
-    protected $quotaPolicy;
+    /** @var Rate */
+    protected $rate;
 
     /** @var DateTimeImmutable */
     protected $resetAt;
 
-    final protected function __construct(string $identifier, int $current, QuotaPolicy $quotaPolicy, DateTimeImmutable $resetAt)
+    final protected function __construct(string $identifier, int $current, Rate $rate, DateTimeImmutable $resetAt)
     {
         $this->identifier = $identifier;
         $this->current = $current;
-        $this->quotaPolicy = $quotaPolicy;
+        $this->rate = $rate;
         $this->resetAt = $resetAt;
     }
 
-    public static function from(string $identifier, int $current, QuotaPolicy $quotaPolicy, DateTimeImmutable $resetAt)
+    public static function from(string $identifier, int $current, Rate $rate, DateTimeImmutable $resetAt)
     {
-        return new static($identifier, $current, $quotaPolicy, $resetAt);
+        return new static($identifier, $current, $rate, $resetAt);
     }
 
     public function getIdentifier(): string
@@ -45,7 +45,7 @@ class Status
 
     public function getQuota(): int
     {
-        return $this->quotaPolicy->getQuota();
+        return $this->rate->getQuota();
     }
 
     public function getResetAt(): DateTimeImmutable

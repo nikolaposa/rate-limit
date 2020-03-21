@@ -20,8 +20,8 @@ final class RateLimitMiddleware implements MiddlewareInterface
     /** @var RateLimiter */
     private $rateLimiter;
 
-    /** @var GetQuotaPolicy */
-    private $getQuotaPolicy;
+    /** @var GetRate */
+    private $getRate;
 
     /** @var ResolveIdentifier */
     private $resolveIdentifier;
@@ -31,27 +31,27 @@ final class RateLimitMiddleware implements MiddlewareInterface
 
     public function __construct(
         RateLimiter $rateLimiter,
-        GetQuotaPolicy $getQuotaPolicy,
+        GetRate $getRate,
         ResolveIdentifier $resolveIdentifier,
         RequestHandlerInterface $limitExceededHandler
     ) {
         $this->rateLimiter = $rateLimiter;
-        $this->getQuotaPolicy = $getQuotaPolicy;
+        $this->getRate = $getRate;
         $this->resolveIdentifier = $resolveIdentifier;
         $this->limitExceededHandler = $limitExceededHandler;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $quotaPolicy = $this->getQuotaPolicy->forRequest($request);
+        $rate = $this->getRate->forRequest($request);
 
-        if (null === $quotaPolicy) {
+        if (null === $rate) {
             return $handler->handle($request);
         }
 
         $identifier = $this->resolveIdentifier->fromRequest($request);
 
-        $status = $this->rateLimiter->handle($identifier, $quotaPolicy);
+        $status = $this->rateLimiter->handle($identifier, $rate);
 
         if ($status->quotaExceeded()) {
             return $this->setRateLimitHeaders($this->limitExceededHandler->handle($request), $status)

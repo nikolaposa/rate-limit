@@ -6,7 +6,7 @@ namespace RateLimit;
 
 use Assert\Assertion;
 
-class QuotaPolicy
+class Rate
 {
     /** @var int */
     protected $quota;

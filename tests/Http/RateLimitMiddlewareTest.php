@@ -9,11 +9,11 @@ use Laminas\Diactoros\ServerRequestFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RateLimit\Http\GetQuotaPolicyViaPathPatternMap;
+use RateLimit\Http\GetRateViaPathPatternMap;
 use RateLimit\Http\RateLimitMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use RateLimit\Http\ResolveIdentifierFromIpAddress;
-use RateLimit\QuotaPolicy;
+use RateLimit\Rate;
 use RateLimit\Tests\TestAsset\InMemoryRateLimiter;
 
 class RateLimitMiddlewareTest extends TestCase
@@ -31,9 +31,9 @@ class RateLimitMiddlewareTest extends TestCase
     {
         $this->rateLimitMiddleware = new RateLimitMiddleware(
             new InMemoryRateLimiter(),
-            new GetQuotaPolicyViaPathPatternMap([
-                '|/api/posts|' => QuotaPolicy::perMinute(3),
-                '|/api/users|' => QuotaPolicy::perSecond(1),
+            new GetRateViaPathPatternMap([
+                '|/api/posts|' => Rate::perMinute(3),
+                '|/api/users|' => Rate::perSecond(1),
             ]),
             new ResolveIdentifierFromIpAddress(),
             new class implements RequestHandlerInterface {
@@ -84,7 +84,7 @@ class RateLimitMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function it_resets_quota_after_interval_defined_by_policy(): void
+    public function it_resets_quota_after_rate_interval(): void
     {
         $this->rateLimitMiddleware->process($this->requestFactory->createServerRequest('POST', '/api/users'), $this->requestHandler);
         $this->rateLimitMiddleware->process($this->requestFactory->createServerRequest('POST', '/api/users'), $this->requestHandler);
