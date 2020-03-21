@@ -77,8 +77,7 @@ use Redis;
 $rateLimitMiddleware = new RateLimitMiddleware(
     new RedisRateLimiter(new Redis()),
     new GetRateViaPathPatternMap([
-        '|/api/posts|' => Rate::perMinute(3),
-        '|/api/users|' => Rate::perSecond(1),
+        '|/api/.+|' => Rate::perMinute(20),
     ]),
     new ResolveIdentifierFromIpAddress(),
     new class implements RequestHandlerInterface {
