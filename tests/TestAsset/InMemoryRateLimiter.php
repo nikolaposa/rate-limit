@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace RateLimit;
+namespace RateLimit\Tests\TestAsset;
 
 use DateTimeImmutable;
+use RateLimit\QuotaPolicy;
+use RateLimit\RateLimiter;
+use RateLimit\Status;
 
 final class InMemoryRateLimiter implements RateLimiter
 {

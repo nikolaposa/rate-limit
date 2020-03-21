@@ -13,8 +13,8 @@ use RateLimit\Http\GetQuotaPolicyViaPathPatternMap;
 use RateLimit\Http\RateLimitMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use RateLimit\Http\ResolveIdentifierFromIpAddress;
-use RateLimit\InMemoryRateLimiter;
 use RateLimit\QuotaPolicy;
+use RateLimit\Tests\TestAsset\InMemoryRateLimiter;
 
 class RateLimitMiddlewareTest extends TestCase
 {
