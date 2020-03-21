@@ -13,9 +13,9 @@ final class InMemoryRateLimiter implements RateLimiter
 
     public function handle(string $identifier, QuotaPolicy $quotaPolicy): Status
     {
-        $key = "$identifier:{$quotaPolicy->getInterval()}:" . floor(time() / $quotaPolicy->getInterval());
+        $key = "$identifier:{$quotaPolicy->getInterval()}";
 
-        if (!isset($this->store[$key])) {
+        if (!isset($this->store[$key]) || time() > $this->store[$key]['expires']) {
             $this->store[$key] = [
                 'current' => 1,
                 'expires' => time() + $quotaPolicy->getInterval(),
