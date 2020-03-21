@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace RateLimit\Http;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RateLimit\RateLimiter;
 use Psr\Http\Message\ResponseInterface;
 use RateLimit\Status;
 
-final class RateLimitMiddleware
+final class RateLimitMiddleware implements MiddlewareInterface
 {
     public const HEADER_LIMIT = 'X-RateLimit-Limit';
     public const HEADER_REMAINING = 'X-RateLimit-Remaining';

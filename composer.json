@@ -31,12 +31,15 @@
         "phpstan/phpstan-phpunit": "^0.12.6",
         "phpunit/phpunit": "^8.0",
         "psr/http-message": "^1.0",
-        "psr/http-server-handler": "^1.0"
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0"
     },
     "suggest": {
         "laminas/laminas-diactoros": "In order to use RateLimitMiddleware",
-        "psr/http-message": "In order to use RateLimitMiddleware",
-        "psr/http-server-handler": "In order to use RateLimitMiddleware"
+        "psr/http-server-middleware": "In order to use RateLimitMiddleware"
+    },
+    "provide": {
+        "psr/http-server-middleware-implementation": "1.0"
     },
     "autoload": {
         "psr-4": {
