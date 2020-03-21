@@ -35,6 +35,7 @@
         "psr/http-server-middleware": "^1.0"
     },
     "suggest": {
+        "ext-redis": "In order to use RedisRateLimiter",
         "laminas/laminas-diactoros": "In order to use RateLimitMiddleware",
         "psr/http-server-middleware": "In order to use RateLimitMiddleware"
     },
