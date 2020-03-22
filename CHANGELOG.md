@@ -2,12 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased][link-unreleased]
+## 2.0.0 - 2020-03-22
 
 ### Changed
 - Cleaner `RateLimiter` API
-- `RateLimitMiddleware` moved to a separate repository: https://github.com/nikolaposa/rate-limit-middleware
-- PHPUnit 8 is now the minimum required version
+- `RateLimitMiddleware` moved to a separate [rate-limit-middleware](https://github.com/nikolaposa/rate-limit-middleware) repository
+- PHP 7.2 is now the minimum required version
 
 ## 1.0.1 - 2017-10-25
 
@@ -43,4 +43,4 @@ All notable changes to this project will be documented in this file.
 - Rename `IdentityGenerator` to `IdentityResolver`
 
 
-[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/1.0.1...HEAD
+[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/2.0.0...HEAD
