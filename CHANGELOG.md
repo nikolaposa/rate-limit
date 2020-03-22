@@ -4,10 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## 2.0.0 - 2020-03-22
 
+### Added
+- `Rate` object representing "per unit of time" rate of operations
+
 ### Changed
-- Cleaner `RateLimiter` API
-- `RateLimitMiddleware` moved to a separate [rate-limit-middleware](https://github.com/nikolaposa/rate-limit-middleware) repository
 - PHP 7.2 is now the minimum required version
+- `RateLimiter` now accepts `identifier` and `Rate` so rate can be specified during runtime
+
+### Removed
+- `RateLimitMiddleware` (moved to a separate [rate-limit-middleware](https://github.com/nikolaposa/rate-limit-middleware) repository)
 
 ## 1.0.1 - 2017-10-25
 
