@@ -1,13 +1,11 @@
 {
     "name": "nikolaposa/rate-limit",
-    "description": "General purpose rate limiter implementation. Also features PSR-15 middleware suitable for APIs.",
+    "description": "General purpose rate limiter implementation.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "rate limit",
-        "redis",
-        "psr-15",
-        "middleware"
+        "redis"
     ],
     "authors": [
         {
@@ -31,11 +29,7 @@
         "phpunit/phpunit": "^8.0"
     },
     "suggest": {
-        "ext-redis": "In order to use RedisRateLimiter",
-        "psr/http-server-middleware": "In order to use RateLimitMiddleware"
-    },
-    "provide": {
-        "psr/http-server-middleware-implementation": "1.0"
+        "ext-redis": "In order to use RedisRateLimiter"
     },
     "autoload": {
         "psr-4": {
