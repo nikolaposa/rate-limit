@@ -25,18 +25,13 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.1",
-        "laminas/laminas-diactoros": "^2.2",
         "phpstan/phpstan": "^0.12.10",
         "phpstan/phpstan-beberlei-assert": "^0.12.2",
         "phpstan/phpstan-phpunit": "^0.12.6",
-        "phpunit/phpunit": "^8.0",
-        "psr/http-message": "^1.0",
-        "psr/http-server-handler": "^1.0",
-        "psr/http-server-middleware": "^1.0"
+        "phpunit/phpunit": "^8.0"
     },
     "suggest": {
         "ext-redis": "In order to use RedisRateLimiter",
-        "laminas/laminas-diactoros": "In order to use RateLimitMiddleware",
         "psr/http-server-middleware": "In order to use RateLimitMiddleware"
     },
     "provide": {

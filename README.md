@@ -9,8 +9,6 @@
 
 General purpose rate limiter that can be used to limit the rate at which certain operation can be performed. Default implementation uses Redis as backend.
  
- This package also provides PSR-15 rate limiter middleware suitable for API or other application endpoints.
-
 ## Installation
 
 The preferred method of installation is via [Composer](http://getcomposer.org/). Run the following
@@ -22,9 +20,7 @@ composer require nikolaposa/rate-limit
 
 ## Usage
 
-### General purpose
-
-**Default rate limiting**
+**Offensive rate limiting**
 
 ```php
 use RateLimit\Exception\LimitExceeded;
@@ -58,43 +54,6 @@ $apiKey = 'abc123';
 $status = $rateLimiter->limitSilently($apiKey, Rate::perMinute(100));
 
 echo $status->getRemainingAttempts(); //99
-```
-
-### Middleware
-
-**Laminas**
-
-```php
-use Laminas\Diactoros\Response;
-use Laminas\Diactoros\Server;
-use Laminas\Stratigility\Middleware\NotFoundHandler;
-use Laminas\Stratigility\MiddlewarePipe;
-use RateLimit\Http\RateLimitMiddleware;
-use RateLimit\Rate;
-use RateLimit\RedisRateLimiter;
-use Redis;
-
-$rateLimitMiddleware = new RateLimitMiddleware(
-    new RedisRateLimiter(new Redis()),
-    new GetRateViaPathPatternMap([
-        '|/api/.+|' => Rate::perMinute(20),
-    ]),
-    new ResolveIdentifierFromIpAddress(),
-    new class implements RequestHandlerInterface {
-        public function handle(ServerRequestInterface $request): ResponseInterface
-        {
-            return new JsonResponse(['error' => 'Too many requests']);
-        }
-    }
-);
-
-$app = new MiddlewarePipe();
-$app->pipe($rateLimitMiddleware);
-
-$server = Server::createServer([$app, 'handle'], $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-$server->listen(function ($req, $res) {
-    return $res;
-});
 ```
 
 ## Credits
