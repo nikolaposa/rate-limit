@@ -83,7 +83,7 @@ abstract class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function it_silently_tracks_number_of_remaining_attempts(): void
+    public function it_silently_tracks_rate_limit_status_information(): void
     {
         $rateLimiter = $this->getRateLimiter();
 
@@ -91,10 +91,15 @@ abstract class RateLimiterTest extends TestCase
             $this->markTestSkipped('RateLimiter not capable of silent limiting');
         }
 
-        $status = $rateLimiter->limitSilently('test', Rate::perMinute(10));
+        $identifier = 'test';
+        $rate = Rate::perMinute(10);
+        
+        $status = $rateLimiter->limitSilently($identifier, $rate);
 
+        $this->assertSame($identifier, $status->getIdentifier());
         $this->assertFalse($status->limitExceeded());
-        $this->assertEquals(9, $status->getRemainingAttempts());
+        $this->assertSame($rate->getOperations(), $status->getLimit());
+        $this->assertSame(9, $status->getRemainingAttempts());
     }
 
     /**
