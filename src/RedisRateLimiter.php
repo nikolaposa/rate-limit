@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RateLimit;
 
-use DateTimeImmutable;
 use RateLimit\Exception\LimitExceeded;
 use Redis;
 
@@ -49,7 +48,7 @@ final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
             $identifier,
             $current,
             $rate->getOperations(),
-            (new DateTimeImmutable())->modify('+' . $this->ttl($key) . ' seconds')
+            time() + $this->ttl($key)
         );
     }
 

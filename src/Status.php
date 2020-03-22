@@ -32,9 +32,15 @@ class Status
         $this->resetAt = $resetAt;
     }
 
-    public static function from(string $identifier, int $current, int $limit, DateTimeImmutable $resetAt)
+    public static function from(string $identifier, int $current, int $limit, int $resetTime)
     {
-        return new static($identifier, $current <= $limit, $limit, max(0, $limit - $current), $resetAt);
+        return new static(
+            $identifier,
+            $current <= $limit,
+            $limit,
+            max(0, $limit - $current),
+            new DateTimeImmutable("@$resetTime")
+        );
     }
 
     public function getIdentifier(): string

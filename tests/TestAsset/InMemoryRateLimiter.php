@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RateLimit\Tests\TestAsset;
 
-use DateTimeImmutable;
 use RateLimit\Exception\LimitExceeded;
 use RateLimit\Rate;
 use RateLimit\RateLimiter;
@@ -32,7 +31,7 @@ final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
         if (!isset($this->store[$key])) {
             $this->store[$key] = [
                 'current' => 1,
-                'reset_at' => time() + $rate->getInterval(),
+                'reset_time' => time() + $rate->getInterval(),
             ];
         } elseif ($this->store[$key]['current'] <= $rate->getOperations()) {
             $this->store[$key]['current']++;
@@ -42,7 +41,7 @@ final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
             $identifier,
             $this->store[$key]['current'],
             $rate->getOperations(),
-            new DateTimeImmutable('@' . $this->store[$key]['reset_at'])
+            $this->store[$key]['reset_time']
         );
     }
 }
