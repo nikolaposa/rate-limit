@@ -56,6 +56,18 @@ $status = $rateLimiter->limitSilently($apiKey, Rate::perMinute(100));
 echo $status->getRemainingAttempts(); //99
 ```
 
+> Or use MemcachedRateLimiter.
+>
+> Pass Memcached instance with enabled binary protocol
+
+```php
+$memcached = new Memcached();
+$memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
+$memcached->addServer('127.0.0.1', 11211);
+
+$rateLimiter = new MemcachedRateLimiter($memcached);
+```
+
 ## Credits
 
 - [Nikola Poša][link-author]

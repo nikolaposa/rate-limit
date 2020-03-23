@@ -5,7 +5,8 @@
     "license": "MIT",
     "keywords": [
         "rate limit",
-        "redis"
+        "redis",
+        "memcached"
     ],
     "authors": [
         {
@@ -29,6 +30,7 @@
         "phpunit/phpunit": "^8.0"
     },
     "suggest": {
+        "ext-memcached": "In order to use MemcachedRateLimiter",
         "ext-redis": "In order to use RedisRateLimiter"
     },
     "autoload": {
