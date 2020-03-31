@@ -38,6 +38,16 @@ class Rate
         return new static($operations, 3600);
     }
 
+    public static function perDay(int $operations)
+    {
+        return new static($operations, 86400);
+    }
+
+    public static function custom(int $operations, int $interval)
+    {
+        return new static($operations, $interval);
+    }
+
     public function getOperations(): int
     {
         return $this->operations;
