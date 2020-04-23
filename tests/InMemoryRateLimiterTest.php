@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace RateLimit\Tests;
 
 use RateLimit\RateLimiter;
-use RateLimit\ArrayRateLimiter;
+use RateLimit\InMemoryRateLimiter;
 
-class ArrayRateLimiterTest extends RateLimiterTest
+class InMemoryRateLimiterTest extends RateLimiterTest
 {
     protected function getRateLimiter(): RateLimiter
     {
-        return new ArrayRateLimiter();
+        return new InMemoryRateLimiter();
     }
 }

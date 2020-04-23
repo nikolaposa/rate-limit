@@ -6,7 +6,7 @@ namespace RateLimit;
 
 use RateLimit\Exception\LimitExceeded;
 
-final class ArrayRateLimiter implements RateLimiter, SilentRateLimiter
+final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
 {
     /** @var array */
     private $cache = [];
