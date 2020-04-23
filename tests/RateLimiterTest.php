@@ -9,6 +9,7 @@ use RateLimit\Exception\LimitExceeded;
 use RateLimit\Rate;
 use RateLimit\RateLimiter;
 use RateLimit\SilentRateLimiter;
+use RateLimit\Status;
 
 abstract class RateLimiterTest extends TestCase
 {
@@ -33,6 +34,9 @@ abstract class RateLimiterTest extends TestCase
             $this->assertSame("Limit of has been exceeded by identifier: $identifier", $exception->getMessage());
             $this->assertSame($identifier, $exception->getIdentifier());
             $this->assertSame($rate, $exception->getRate());
+            $this->assertInstanceOf(Status::class, $exception->getStatus());
+            $this->assertTrue($exception->getStatus()->limitExceeded());
+            $this->assertSame(0, $exception->getStatus()->getRemainingAttempts());
         }
     }
 
@@ -55,6 +59,8 @@ abstract class RateLimiterTest extends TestCase
             $this->fail('Limit should have been reached');
         } catch (LimitExceeded $exception) {
             $this->assertSame($identifier, $exception->getIdentifier());
+            $this->assertTrue($exception->getStatus()->limitExceeded());
+            $this->assertSame(0, $exception->getStatus()->getRemainingAttempts());
         }
     }
 
