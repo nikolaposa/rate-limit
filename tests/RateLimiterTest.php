@@ -79,7 +79,6 @@ abstract class RateLimiterTest extends TestCase
         $rate = Rate::perHour(1);
 
         $rateLimiter->limitSilently($identifier, $rate);
-        $rateLimiter->limitSilently($identifier, $rate);
         $status = $rateLimiter->limitSilently($identifier, $rate);
 
         $this->assertTrue($status->limitExceeded());
@@ -99,7 +98,7 @@ abstract class RateLimiterTest extends TestCase
 
         $identifier = 'test';
         $rate = Rate::perMinute(10);
-        
+
         $status = $rateLimiter->limitSilently($identifier, $rate);
 
         $this->assertSame($identifier, $status->getIdentifier());
