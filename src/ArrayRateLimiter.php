@@ -65,7 +65,7 @@ final class ArrayRateLimiter implements RateLimiter, SilentRateLimiter
         }
 
         array_push($this->cache[$key], time() + $interval);
-        $current = count($this->cache[$key]);
+        $current = count((array) $this->cache[$key]);
 
         return $current;
     }
