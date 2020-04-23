@@ -23,15 +23,11 @@ final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
 
     public function limit(string $identifier, Rate $rate): void
     {
-        $key = $this->key($identifier, $rate->getInterval());
+        $status = $this->limitSilently($identifier, $rate);
 
-        $current = $this->getCurrent($key);
-
-        if ($current >= $rate->getOperations()) {
-            throw LimitExceeded::for($identifier, $rate);
+        if ($status->limitExceeded()) {
+            throw LimitExceeded::for($status, $rate);
         }
-
-        $this->updateCounter($key, $rate->getInterval());
     }
 
     public function limitSilently(string $identifier, Rate $rate): Status

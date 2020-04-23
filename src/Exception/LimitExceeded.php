@@ -5,32 +5,38 @@ declare(strict_types=1);
 namespace RateLimit\Exception;
 
 use RateLimit\Rate;
+use RateLimit\Status;
 use RuntimeException;
 
 final class LimitExceeded extends RuntimeException
 {
-    /** @var string */
-    protected $identifier;
-
     /** @var Rate */
     protected $rate;
 
-    public static function for(string $identifier, Rate $rate): self
+    /** @var Status */
+    protected $status;
+
+    public static function for(Status $status, Rate $rate): self
     {
-        $exception = new self("Limit of has been exceeded by identifier: $identifier");
-        $exception->identifier = $identifier;
+        $exception = new self("Limit of has been exceeded by identifier: {$status->getIdentifier()}");
         $exception->rate = $rate;
+        $exception->status = $status;
 
         return $exception;
     }
 
     public function getIdentifier(): string
     {
-        return $this->identifier;
+        return $this->status->getIdentifier();
     }
 
     public function getRate(): Rate
     {
         return $this->rate;
+    }
+
+    public function getStatus(): Status
+    {
+        return $this->status;
     }
 }
