@@ -9,5 +9,4 @@ parameters:
         - '~Method [a-zA-Z0-9\\_]+Rate::[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
 
 includes:
-    - vendor/phpstan/phpstan-beberlei-assert/extension.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
