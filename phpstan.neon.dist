@@ -5,8 +5,12 @@ parameters:
         - tests
     checkMissingIterableValueType: false
     ignoreErrors:
-        - '~Method [a-zA-Z0-9\\_]+::from[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
-        - '~Method [a-zA-Z0-9\\_]+Rate::[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
+        - message: '~Method [a-zA-Z0-9\\_]+::from[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
+          path: 'src/Status.php'
+        - message: '~Method [a-zA-Z0-9\\_]+Rate::[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
+          path: 'src/Rate.php'
+        - message: '~Strict comparison using === between int and false will always evaluate to false.~'
+          path: 'src/ApcuRateLimiter.php'
 
 includes:
     - vendor/phpstan/phpstan-beberlei-assert/extension.neon

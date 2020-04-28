@@ -11,8 +11,8 @@ class ApcuRateLimiterTest extends RateLimiterTest
 {
     protected function getRateLimiter(): RateLimiter
     {
-        if (!\extension_loaded('apcu') || !\apcu_enabled()) {
-            $this->markTestSkipped('APCu extension not loaded or enabled.');
+        if (!\extension_loaded('apcu')) {
+            $this->markTestSkipped('APCu extension not loaded.');
         }
 
         if (\ini_get('apc.use_request_time') === '1') {

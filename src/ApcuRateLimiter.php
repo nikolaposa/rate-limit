@@ -8,8 +8,8 @@ final class ApcuRateLimiter extends AbstractElapsedTimeRateLimiter
 {
     public function __construct(string $keyPrefix = '')
     {
-        if (!\extension_loaded('apcu') || !\apcu_enabled()) {
-            throw new \RuntimeException('APCu extension is not loaded or enabled.');
+        if (!\extension_loaded('apcu')) {
+            throw new \RuntimeException('APCu extension is not loaded.');
         }
 
         if (\ini_get('apc.use_request_time') === '1') {

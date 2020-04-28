@@ -19,7 +19,7 @@ class PredisRateLimiterTest extends RateLimiterTest
             $this->markTestSkipped('Cannot connect with Predis.');
         }
 
-        $predis->flushDB();
+        $predis->flushdb();
 
         return new PredisRateLimiter($predis);
     }
