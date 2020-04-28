@@ -11,9 +11,13 @@ php:
 
 services:
   - redis
+  - memcached
 
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "apc.enabled = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "apc.use_request_time = 0" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
   - travis_retry composer install --no-interaction
