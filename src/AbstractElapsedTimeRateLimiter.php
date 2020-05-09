@@ -8,7 +8,9 @@ use RateLimit\Exception\LimitExceeded;
 
 abstract class AbstractElapsedTimeRateLimiter implements RateLimiter, SilentRateLimiter
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $keyPrefix;
 
     public function __construct(string $keyPrefix = '')
