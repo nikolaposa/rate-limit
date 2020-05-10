@@ -12,9 +12,13 @@ class RedisRateLimiterTest extends RateLimiterTest
 {
     protected function getRateLimiter(): RateLimiter
     {
+        if (!\extension_loaded('redis')) {
+            $this->markTestSkipped('Redis extension not loaded.');
+        }
+
         $redis = new Redis();
 
-        $success = @ $redis->connect('127.0.0.1');
+        $success = @ $redis->connect('127.0.0.1', 6379);
 
         if (!$success) {
             $this->markTestSkipped('Cannot connect to Redis.');
