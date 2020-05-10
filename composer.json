@@ -22,14 +22,17 @@
         "beberlei/assert": "^3.2"
     },
     "require-dev": {
+        "ext-redis": "*",
         "friendsofphp/php-cs-fixer": "^2.1",
         "phpstan/phpstan": "^0.12.10",
         "phpstan/phpstan-beberlei-assert": "^0.12.2",
         "phpstan/phpstan-phpunit": "^0.12.6",
-        "phpunit/phpunit": "^8.0"
+        "phpunit/phpunit": "^8.0",
+        "predis/predis": "^1.1"
     },
     "suggest": {
-        "ext-redis": "In order to use RedisRateLimiter"
+        "ext-redis": "In order to use RedisRateLimiter",
+        "predis/predis": "In order to use PredisRateLimiter"
     },
     "autoload": {
         "psr-4": {
