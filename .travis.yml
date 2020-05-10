@@ -14,6 +14,8 @@ services:
 
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - yes '' | pecl install apcu
+  - echo "extension = apcu.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "apc.enabled = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "apc.use_request_time = 0" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
