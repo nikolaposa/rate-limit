@@ -14,7 +14,7 @@ final class ApcuRateLimiter implements RateLimiter, SilentRateLimiter
 
     public function __construct(string $keyPrefix = '')
     {
-        if (!\extension_loaded('apcu') || \ini_get('apc.enable_cli') === '0') {
+        if (!\extension_loaded('apcu') || \ini_get('apc.enabled') === '0') {
             throw new CannotUseRateLimiter('APCu extension is not loaded or not enabled.');
         }
 
