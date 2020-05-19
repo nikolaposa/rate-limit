@@ -50,8 +50,8 @@ use Redis;
 
 $rateLimiter = new RedisRateLimiter(new Redis());
 
-$apiKey = 'abc123';
-$status = $rateLimiter->limitSilently($apiKey, Rate::perMinute(100));
+$ipAddress = '192.168.1.2';
+$status = $rateLimiter->limitSilently($ipAddress, Rate::perMinute(100));
 
 echo $status->getRemainingAttempts(); //99
 ```
