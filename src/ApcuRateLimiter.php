@@ -27,27 +27,25 @@ final class ApcuRateLimiter implements RateLimiter, SilentRateLimiter
 
     public function limit(string $identifier, Rate $rate): void
     {
-        $interval = $rate->getInterval();
-        $valueKey = $this->valueKey($identifier, $interval);
-        $timeKey = $this->timeKey($identifier, $interval);
+        $limitKey = $this->limitKey($identifier, $rate->getInterval());
 
-        $current = $this->getCurrent($valueKey);
+        $current = $this->getCurrent($limitKey);
         if ($current >= $rate->getOperations()) {
             throw LimitExceeded::for($identifier, $rate);
         }
 
-        $this->updateCounter($valueKey, $timeKey, $rate->getInterval());
+        $this->updateCounter($limitKey, $rate->getInterval());
     }
 
     public function limitSilently(string $identifier, Rate $rate): Status
     {
         $interval = $rate->getInterval();
-        $valueKey = $this->valueKey($identifier, $interval);
+        $limitKey = $this->limitKey($identifier, $interval);
         $timeKey = $this->timeKey($identifier, $interval);
 
-        $current = $this->getCurrent($valueKey);
+        $current = $this->getCurrent($limitKey);
         if ($current <= $rate->getOperations()) {
-            $current = $this->updateCounter($valueKey, $timeKey, $interval);
+            $current = $this->updateCounterAndTime($limitKey, $timeKey, $interval);
         }
 
         return Status::from(
@@ -58,28 +56,35 @@ final class ApcuRateLimiter implements RateLimiter, SilentRateLimiter
         );
     }
 
-    private function valueKey(string $identifier, int $interval): string
+    private function limitKey(string $identifier, int $interval): string
     {
-        return "{$this->keyPrefix}{$identifier}:value:$interval";
+        return "{$this->keyPrefix}{$identifier}:$interval";
     }
 
     private function timeKey(string $identifier, int $interval): string
     {
-        return "{$this->keyPrefix}{$identifier}:time:$interval";
+        return "{$this->keyPrefix}{$identifier}:$interval:time";
     }
 
-    private function getCurrent(string $valueKey): int
+    private function getCurrent(string $limitKey): int
     {
-        return (int) \apcu_fetch($valueKey);
+        return (int) \apcu_fetch($limitKey);
     }
 
-    private function updateCounter(string $valueKey, string $timeKey, int $interval): int
+    private function updateCounterAndTime(string $limitKey, string $timeKey, int $interval): int
     {
-        $current = \apcu_inc($valueKey, 1, $success, $interval);
+        $current = $this->updateCounter($limitKey, $interval);
 
         if ($current === 1) {
             \apcu_store($timeKey, \time(), $interval);
         }
+
+        return $current;
+    }
+
+    private function updateCounter(string $limitKey, int $interval): int
+    {
+        $current = \apcu_inc($limitKey, 1, $success, $interval);
 
         return $current === false ? 1 : $current;
     }
