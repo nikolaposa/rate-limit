@@ -22,6 +22,7 @@
         "beberlei/assert": "^3.2"
     },
     "require-dev": {
+        "ext-apcu": "*",
         "ext-redis": "*",
         "friendsofphp/php-cs-fixer": "^2.1",
         "phpstan/phpstan": "^0.12.10",
@@ -31,6 +32,7 @@
         "predis/predis": "^1.1"
     },
     "suggest": {
+        "ext-apcu": "In order to use ApcuRateLimiter",
         "ext-redis": "In order to use RedisRateLimiter",
         "predis/predis": "In order to use PredisRateLimiter"
     },
