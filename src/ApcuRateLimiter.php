@@ -49,7 +49,7 @@ final class ApcuRateLimiter implements RateLimiter, SilentRateLimiter
         }
 
         return Status::from(
-            \sprintf('%s%s', $this->keyPrefix, $identifier),
+            $identifier,
             $current,
             $rate->getOperations(),
             \time() + \max(0, $interval - $this->getElapsedTime($timeKey))
@@ -58,12 +58,12 @@ final class ApcuRateLimiter implements RateLimiter, SilentRateLimiter
 
     private function limitKey(string $identifier, int $interval): string
     {
-        return "{$this->keyPrefix}{$identifier}:$interval";
+        return \sprintf('%s%s:%d', $this->keyPrefix, $identifier, $interval);
     }
 
     private function timeKey(string $identifier, int $interval): string
     {
-        return "{$this->keyPrefix}{$identifier}:$interval:time";
+        return \sprintf('%s%s:%d:time', $this->keyPrefix, $identifier, $interval);
     }
 
     private function getCurrent(string $limitKey): int
