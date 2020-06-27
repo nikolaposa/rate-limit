@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [Unreleased][link-unreleased]
+
+- [20: Support for custom rate limit values](https://github.com/nikolaposa/rate-limit/pull/20)
+- [25: APCu Rate Limiter](https://github.com/nikolaposa/rate-limit/pull/25)
+- [26: Predis Rate Limiter](https://github.com/nikolaposa/rate-limit/pull/26)
+- [28: Memcached Rate Limiter](https://github.com/nikolaposa/rate-limit/pull/28)
+
 ## 2.0.0 - 2020-03-22
 
 ### Added
