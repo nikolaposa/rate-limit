@@ -22,7 +22,7 @@
         "beberlei/assert": "^3.2"
     },
     "require-dev": {
-        "ext-apcu": "*",
+        "ext-apcu": ">=5.1.12",
         "ext-memcached": "*",
         "ext-redis": "*",
         "friendsofphp/php-cs-fixer": "^2.1",
