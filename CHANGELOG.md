@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-### [Unreleased][link-unreleased]
+### 2.1.0 - 2020-07-05
 
 - [20: Support for custom rate limit values](https://github.com/nikolaposa/rate-limit/pull/20)
 - [25: APCu Rate Limiter](https://github.com/nikolaposa/rate-limit/pull/25)
