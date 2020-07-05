@@ -7,7 +7,7 @@ namespace RateLimit\Exception;
 use RateLimit\Rate;
 use RuntimeException;
 
-final class LimitExceeded extends RuntimeException
+final class LimitExceeded extends RuntimeException implements RateLimitException
 {
     /** @var string */
     protected $identifier;
