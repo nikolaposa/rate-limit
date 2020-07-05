@@ -9,6 +9,7 @@ use RateLimit\Exception\LimitExceeded;
 use RateLimit\Rate;
 use RateLimit\RateLimiter;
 use RateLimit\SilentRateLimiter;
+use function sleep;
 
 abstract class RateLimiterTest extends TestCase
 {
@@ -93,7 +94,7 @@ abstract class RateLimiterTest extends TestCase
 
         $identifier = 'test';
         $rate = Rate::perMinute(10);
-        
+
         $status = $rateLimiter->limitSilently($identifier, $rate);
 
         $this->assertSame($identifier, $status->getIdentifier());

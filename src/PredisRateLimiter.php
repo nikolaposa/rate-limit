@@ -6,6 +6,9 @@ namespace RateLimit;
 
 use Predis\ClientInterface;
 use RateLimit\Exception\LimitExceeded;
+use function ceil;
+use function max;
+use function time;
 
 final class PredisRateLimiter implements RateLimiter, SilentRateLimiter
 {

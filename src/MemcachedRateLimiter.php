@@ -7,6 +7,9 @@ namespace RateLimit;
 use Memcached;
 use RateLimit\Exception\CannotUseRateLimiter;
 use RateLimit\Exception\LimitExceeded;
+use function max;
+use function sprintf;
+use function time;
 
 final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
 {
@@ -56,18 +59,18 @@ final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
             $identifier,
             $current,
             $rate->getOperations(),
-            \time() + \max(0, $interval - $this->getElapsedTime($timeKey))
+            time() + max(0, $interval - $this->getElapsedTime($timeKey))
         );
     }
 
     private function limitKey(string $identifier, int $interval): string
     {
-        return \sprintf('%s%s:%d', $this->keyPrefix, $identifier, $interval);
+        return sprintf('%s%s:%d', $this->keyPrefix, $identifier, $interval);
     }
 
     private function timeKey(string $identifier, int $interval): string
     {
-        return \sprintf('%s%s:%d:time', $this->keyPrefix, $identifier, $interval);
+        return sprintf('%s%s:%d:time', $this->keyPrefix, $identifier, $interval);
     }
 
     private function getCurrent(string $limitKey): int
@@ -80,7 +83,7 @@ final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
         $current = $this->updateCounter($limitKey, $interval);
 
         if ($current === 1) {
-            $this->memcached->add($timeKey, \time(), $this->intervalToMemcachedTime($interval));
+            $this->memcached->add($timeKey, time(), $this->intervalToMemcachedTime($interval));
         }
 
         return $current;
@@ -95,7 +98,7 @@ final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
 
     private function getElapsedTime(string $timeKey): int
     {
-        return \time() - (int) $this->memcached->get($timeKey);
+        return time() - (int) $this->memcached->get($timeKey);
     }
 
     /**
@@ -108,6 +111,6 @@ final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
      */
     private function intervalToMemcachedTime(int $interval): int
     {
-        return $interval <= self::MEMCACHED_SECONDS_LIMIT ? $interval : \time() + $interval;
+        return $interval <= self::MEMCACHED_SECONDS_LIMIT ? $interval : time() + $interval;
     }
 }

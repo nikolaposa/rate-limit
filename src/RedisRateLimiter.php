@@ -6,6 +6,9 @@ namespace RateLimit;
 
 use RateLimit\Exception\LimitExceeded;
 use Redis;
+use function ceil;
+use function max;
+use function time;
 
 final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
 {

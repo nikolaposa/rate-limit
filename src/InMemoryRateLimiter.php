@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace RateLimit;
 
 use RateLimit\Exception\LimitExceeded;
+use function floor;
+use function time;
 
 final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
 {

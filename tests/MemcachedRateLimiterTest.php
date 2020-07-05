@@ -7,12 +7,13 @@ namespace RateLimit\Tests;
 use Memcached;
 use RateLimit\MemcachedRateLimiter;
 use RateLimit\RateLimiter;
+use function extension_loaded;
 
 class MemcachedRateLimiterTest extends RateLimiterTest
 {
     protected function getRateLimiter(): RateLimiter
     {
-        if (!\extension_loaded('memcached')) {
+        if (!extension_loaded('memcached')) {
             $this->markTestSkipped('Memcached extension not loaded.');
         }
 

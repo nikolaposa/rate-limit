@@ -7,6 +7,7 @@ namespace RateLimit\Tests;
 use Predis\Client;
 use RateLimit\PredisRateLimiter;
 use RateLimit\RateLimiter;
+use function class_exists;
 
 class PredisRateLimiterTest extends RateLimiterTest
 {
