@@ -10,7 +10,7 @@ use RateLimit\Exception\LimitExceeded;
 
 final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
 {
-    private const MEMCACHED_SECONDS_LIMIT = 2592000; // Number of seconds in 30 days
+    private const MEMCACHED_SECONDS_LIMIT = 2592000; // 30 days in seconds
 
     /** @var Memcached */
     private $memcached;
@@ -104,7 +104,6 @@ final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
      * @see https://www.php.net/manual/en/memcached.expiration.php
      *
      * @param int $interval
-     *
      * @return int
      */
     private function intervalToMemcachedTime(int $interval): int
