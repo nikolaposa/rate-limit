@@ -5,15 +5,15 @@ name: Build
 on:
   pull_request: null
   push:
-  branches:
-    - master
+    branches:
+      - master
 
 jobs:
   hello:
     name: Hello
 
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Echo a greeting
-      run: echo 'Hello, GitHub Actions!'
+    steps:
+      - name: Echo a greeting
+        run: echo 'Hello, GitHub Actions!'
