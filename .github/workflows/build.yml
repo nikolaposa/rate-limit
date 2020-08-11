@@ -8,12 +8,44 @@ on:
     branches:
       - master
 
+env:
+  PHP_EXTENSIONS: apcu, memcached, redis
+
 jobs:
-  hello:
-    name: Hello
+  static-analysis:
+    name: Static Analysis
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-version:
+          - 7.2
+
     steps:
-      - name: Echo a greeting
-        run: echo 'Hello, GitHub Actions!'
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          php-version: ${{ matrix.php-version }}
+
+      - name: Determine composer cache directory
+        id: determine-composer-cache-directory
+        run: echo "::set-output name=directory::$(composer config cache-dir)"
+
+      - name: Cache dependencies installed with composer
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
+          key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: php-${{ matrix.php-version }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction
+
+      - name: Run phpstan/phpstan
+        run: vendor/bin/phpstan analyse
