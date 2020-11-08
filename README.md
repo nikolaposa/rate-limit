@@ -1,6 +1,5 @@
 # Rate Limit
 
-[![Build Status](https://travis-ci.com/nikolaposa/rate-limit.svg?branch=master)](https://travis-ci.com/nikolaposa/rate-limit)
 [![Build](https://github.com/nikolaposa/rate-limit/workflows/Build/badge.svg?branch=master)](https://github.com/nikolaposa/rate-limit/actions)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nikolaposa/rate-limit/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nikolaposa/rate-limit/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/nikolaposa/rate-limit/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/nikolaposa/rate-limit/?branch=master)
