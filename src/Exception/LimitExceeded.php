@@ -17,7 +17,11 @@ final class LimitExceeded extends RuntimeException implements RateLimitException
 
     public static function for(string $identifier, Rate $rate): self
     {
-        $exception = new self("Limit of has been exceeded by identifier: $identifier");
+        $exception = new self(sprintf(
+            'Limit has been exceeded for identifier "%s".',
+            $identifier
+        ));
+
         $exception->identifier = $identifier;
         $exception->rate = $rate;
 

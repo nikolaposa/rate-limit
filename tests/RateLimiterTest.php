@@ -31,7 +31,6 @@ abstract class RateLimiterTest extends TestCase
 
             $this->fail('Limit should have been reached');
         } catch (LimitExceeded $exception) {
-            $this->assertSame("Limit of has been exceeded by identifier: $identifier", $exception->getMessage());
             $this->assertSame($identifier, $exception->getIdentifier());
             $this->assertSame($rate, $exception->getRate());
         }
