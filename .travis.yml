@@ -6,8 +6,6 @@ cache:
 
 php:
   - 7.2
-  - 7.3
-  - 7.4
 
 services:
   - redis
@@ -24,13 +22,9 @@ before_install:
 install:
   - travis_retry composer install --no-interaction
 
-script: ./vendor/bin/phpunit
+script:
+  - ./vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml
 
-jobs:
-  include:
-    - stage: Code coverage
-      script:
-        - ./vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml
-      after_script:
-        - wget https://scrutinizer-ci.com/ocular.phar
-        - php ocular.phar code-coverage:upload --format=php-clover clover.xml
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover clover.xml
