@@ -18,14 +18,14 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.2",
+        "php": "^7.2 || ^8.0",
         "beberlei/assert": "^3.2"
     },
     "require-dev": {
         "ext-apcu": ">=5.1.12",
         "ext-memcached": "*",
         "ext-redis": "*",
-        "friendsofphp/php-cs-fixer": "^2.1",
+        "friendsofphp/php-cs-fixer": "^2.17",
         "phpstan/phpstan": "^0.12.10",
         "phpstan/phpstan-beberlei-assert": "^0.12.2",
         "phpstan/phpstan-phpunit": "^0.12.6",
