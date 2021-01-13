@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.2.0 - 2021-01-14
+
+### Added
+- [43: Allow PHP 8 installations](https://github.com/nikolaposa/rate-limit/pull/43)
+### Changed
+- Migrated from Travis CI to GitHub Action thanks to [Andreas Möller](https://github.com/localheinz)
+- [34: Improve LimitExceeded exception message](https://github.com/nikolaposa/rate-limit/pull/42)
+
 ### 2.1.0 - 2020-07-05
 
 ### Added
