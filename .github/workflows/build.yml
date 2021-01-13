@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  PHP_EXTENSIONS: apcu, memcached, redis
+  PHP_EXTENSIONS: apcu, redis
 
 jobs:
   static-analysis:
@@ -94,16 +94,6 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      memcached:
-        image: memcached
-        options: >-
-          --health-cmd "timeout 5 bash -c 'cat < /dev/null > /dev/udp/127.0.0.1/11211'"
-          --health-interval 10s
-          --health-retries 5
-          --health-timeout 5s
-        ports:
-          - 11211:11211
-
       redis:
         image: redis
         options: >-
@@ -120,6 +110,7 @@ jobs:
           - 7.2
           - 7.3
           - 7.4
+          - 8.0
 
     steps:
       - name: Checkout
@@ -156,16 +147,6 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      memcached:
-        image: memcached
-        options: >-
-          --health-cmd "timeout 5 bash -c 'cat < /dev/null > /dev/udp/127.0.0.1/11211'"
-          --health-interval 10s
-          --health-retries 5
-          --health-timeout 5s
-        ports:
-          - 11211:11211
-
       redis:
         image: redis
         options: >-
