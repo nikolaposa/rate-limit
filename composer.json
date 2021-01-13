@@ -23,7 +23,6 @@
     },
     "require-dev": {
         "ext-apcu": ">=5.1.12",
-        "ext-memcached": "*",
         "ext-redis": "*",
         "friendsofphp/php-cs-fixer": "^2.17",
         "phpstan/phpstan": "^0.12.10",
