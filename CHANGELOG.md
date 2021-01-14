@@ -66,4 +66,4 @@ All notable changes to this project will be documented in this file.
 - Rename `IdentityGenerator` to `IdentityResolver`
 
 
-[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/2.0.0...HEAD
+[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/2.2.0...HEAD
