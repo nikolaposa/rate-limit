@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - [43: Allow PHP 8 installations](https://github.com/nikolaposa/rate-limit/pull/43)
+
 ### Changed
 - Migrated from Travis CI to GitHub Action thanks to [Andreas Möller](https://github.com/localheinz)
 - [34: Improve LimitExceeded exception message](https://github.com/nikolaposa/rate-limit/pull/42)
