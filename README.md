@@ -56,6 +56,14 @@ $status = $rateLimiter->limitSilently($ipAddress, Rate::perMinute(100));
 echo $status->getRemainingAttempts(); //99
 ```
 
+## Supported drivers
+
+- [Redis](src/RedisRateLimiter.php)
+- [Predis](src/PredisRateLimiter.php)
+- [Memcached](src/MemcachedRateLimiter.php)
+- [APCu](src/ApcuRateLimiter.php)
+- [In-memory](src/InMemoryRateLimiter.php)
+
 ## Credits
 
 - [Nikola Poša][link-author]
