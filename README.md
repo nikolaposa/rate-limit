@@ -20,7 +20,7 @@ composer require nikolaposa/rate-limit
 
 ## Usage
 
-**Terminating rate limiting**
+**Terminating rate limiter**
 
 ```php
 use RateLimit\Exception\LimitExceeded;
@@ -41,7 +41,7 @@ try {
 }
 ```
 
-**Silent rate limiting**
+**Silent rate limiter**
 
 ```php
 use RateLimit\Rate;
