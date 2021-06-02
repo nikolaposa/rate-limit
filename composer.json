@@ -36,7 +36,8 @@
         "ext-apcu": "In order to use ApcuRateLimiter",
         "ext-memcached": "In order to use MemcachedRateLimiter",
         "ext-redis": "In order to use RedisRateLimiter",
-        "predis/predis": "In order to use PredisRateLimiter"
+        "predis/predis": "In order to use PredisRateLimiter",
+        "psr/simple-cache": "In order to use Psr16RateLimiter"
     },
     "autoload": {
         "psr-4": {
