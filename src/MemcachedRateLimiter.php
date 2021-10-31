@@ -11,7 +11,7 @@ use function max;
 use function sprintf;
 use function time;
 
-final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
+final class MemcachedRateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
     private const MEMCACHED_SECONDS_LIMIT = 2592000; // 30 days in seconds
 
@@ -21,56 +21,56 @@ final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
     /** @var string */
     private $keyPrefix;
 
-    public function __construct(Memcached $memcached, string $keyPrefix = '')
+    public function __construct(Rate $rate, Memcached $memcached, string $keyPrefix = '')
     {
         // @see https://www.php.net/manual/en/memcached.increment.php#111187
         if ($memcached->getOption(Memcached::OPT_BINARY_PROTOCOL) !== 1) {
             throw new CannotUseRateLimiter('Memcached "OPT_BINARY_PROTOCOL" option should be set to "true".');
         }
 
+        parent::__construct($rate);
         $this->memcached = $memcached;
         $this->keyPrefix = $keyPrefix;
     }
 
-    public function limit(string $identifier, Rate $rate): void
+    public function limit(string $identifier): void
     {
-        $limitKey = $this->limitKey($identifier, $rate->getInterval());
+        $limitKey = $this->limitKey($identifier);
 
         $current = $this->getCurrent($limitKey);
-        if ($current >= $rate->getOperations()) {
-            throw LimitExceeded::for($identifier, $rate);
+        if ($current >= $this->rate->getOperations()) {
+            throw LimitExceeded::for($identifier, $this->rate);
         }
 
-        $this->updateCounter($limitKey, $rate->getInterval());
+        $this->updateCounter($limitKey);
     }
 
-    public function limitSilently(string $identifier, Rate $rate): Status
+    public function limitSilently(string $identifier): Status
     {
-        $interval = $rate->getInterval();
-        $limitKey = $this->limitKey($identifier, $interval);
-        $timeKey = $this->timeKey($identifier, $interval);
+        $limitKey = $this->limitKey($identifier);
+        $timeKey = $this->timeKey($identifier);
 
         $current = $this->getCurrent($limitKey);
-        if ($current <= $rate->getOperations()) {
-            $current = $this->updateCounterAndTime($limitKey, $timeKey, $interval);
+        if ($current <= $this->rate->getOperations()) {
+            $current = $this->updateCounterAndTime($limitKey, $timeKey);
         }
 
         return Status::from(
             $identifier,
             $current,
-            $rate->getOperations(),
-            time() + max(0, $interval - $this->getElapsedTime($timeKey))
+            $this->rate->getOperations(),
+            time() + max(0, $this->rate->getInterval() - $this->getElapsedTime($timeKey))
         );
     }
 
-    private function limitKey(string $identifier, int $interval): string
+    private function limitKey(string $identifier): string
     {
-        return sprintf('%s%s:%d', $this->keyPrefix, $identifier, $interval);
+        return sprintf('%s%s:%d', $this->keyPrefix, $identifier, $this->rate->getInterval());
     }
 
-    private function timeKey(string $identifier, int $interval): string
+    private function timeKey(string $identifier): string
     {
-        return sprintf('%s%s:%d:time', $this->keyPrefix, $identifier, $interval);
+        return sprintf('%s%s:%d:time', $this->keyPrefix, $identifier, $this->rate->getInterval());
     }
 
     private function getCurrent(string $limitKey): int
@@ -78,20 +78,20 @@ final class MemcachedRateLimiter implements RateLimiter, SilentRateLimiter
         return (int) $this->memcached->get($limitKey);
     }
 
-    private function updateCounterAndTime(string $limitKey, string $timeKey, int $interval): int
+    private function updateCounterAndTime(string $limitKey, string $timeKey): int
     {
-        $current = $this->updateCounter($limitKey, $interval);
+        $current = $this->updateCounter($limitKey);
 
         if ($current === 1) {
-            $this->memcached->add($timeKey, time(), $this->intervalToMemcachedTime($interval));
+            $this->memcached->add($timeKey, time(), $this->intervalToMemcachedTime($this->rate->getInterval()));
         }
 
         return $current;
     }
 
-    private function updateCounter(string $limitKey, int $interval): int
+    private function updateCounter(string $limitKey): int
     {
-        $current = $this->memcached->increment($limitKey, 1, 1, $this->intervalToMemcachedTime($interval));
+        $current = $this->memcached->increment($limitKey, 1, 1, $this->intervalToMemcachedTime($this->rate->getInterval()));
 
         return $current === false ? 1 : $current;
     }

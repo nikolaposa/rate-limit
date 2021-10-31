@@ -11,5 +11,5 @@ interface RateLimiter
     /**
      * @throws LimitExceeded
      */
-    public function limit(string $identifier, Rate $rate): void;
+    public function limit(string $identifier): void;
 }

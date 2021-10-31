@@ -6,5 +6,5 @@ namespace RateLimit;
 
 interface SilentRateLimiter
 {
-    public function limitSilently(string $identifier, Rate $rate): Status;
+    public function limitSilently(string $identifier): Status;
 }

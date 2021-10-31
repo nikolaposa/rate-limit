@@ -8,49 +8,51 @@ use RateLimit\Exception\LimitExceeded;
 use function floor;
 use function time;
 
-final class InMemoryRateLimiter implements RateLimiter, SilentRateLimiter
+final class InMemoryRateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
     /** @var array */
     private $store = [];
 
-    public function limit(string $identifier, Rate $rate): void
+    public function limit(string $identifier): void
     {
-        $key = $this->key($identifier, $rate->getInterval());
+        $key = $this->key($identifier);
 
-        $current = $this->hit($key, $rate);
+        $current = $this->hit($key);
 
-        if ($current > $rate->getOperations()) {
-            throw LimitExceeded::for($identifier, $rate);
+        if ($current > $this->rate->getOperations()) {
+            throw LimitExceeded::for($identifier, $this->rate);
         }
     }
 
-    public function limitSilently(string $identifier, Rate $rate): Status
+    public function limitSilently(string $identifier): Status
     {
-        $key = $this->key($identifier, $rate->getInterval());
+        $key = $this->key($identifier);
 
-        $current = $this->hit($key, $rate);
+        $current = $this->hit($key);
 
         return Status::from(
             $identifier,
             $current,
-            $rate->getOperations(),
+            $this->rate->getOperations(),
             $this->store[$key]['reset_time']
         );
     }
 
-    private function key(string $identifier, int $interval): string
+    private function key(string $identifier): string
     {
+        $interval = $this->rate->getInterval();
+
         return "$identifier:$interval:" . floor(time() / $interval);
     }
 
-    private function hit(string $key, Rate $rate): int
+    private function hit(string $key): int
     {
         if (!isset($this->store[$key])) {
             $this->store[$key] = [
                 'current' => 1,
-                'reset_time' => time() + $rate->getInterval(),
+                'reset_time' => time() + $this->rate->getInterval(),
             ];
-        } elseif ($this->store[$key]['current'] <= $rate->getOperations()) {
+        } elseif ($this->store[$key]['current'] <= $this->rate->getOperations()) {
             $this->store[$key]['current']++;
         }
 

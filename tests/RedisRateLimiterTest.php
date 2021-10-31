@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RateLimit\Tests;
 
+use RateLimit\Rate;
 use RateLimit\RateLimiter;
 use RateLimit\RedisRateLimiter;
 use Redis;
@@ -11,7 +12,7 @@ use function extension_loaded;
 
 class RedisRateLimiterTest extends RateLimiterTest
 {
-    protected function getRateLimiter(): RateLimiter
+    protected function getRateLimiter(Rate $rate): RateLimiter
     {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('Redis extension not loaded.');
@@ -27,6 +28,6 @@ class RedisRateLimiterTest extends RateLimiterTest
 
         $redis->flushDB();
 
-        return new RedisRateLimiter($redis);
+        return new RedisRateLimiter($rate, $redis);
     }
 }
