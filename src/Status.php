@@ -9,20 +9,11 @@ use function max;
 
 class Status
 {
-    /** @var string */
-    protected $identifier;
-
-    /** @var bool */
-    protected $success;
-
-    /** @var int */
-    protected $limit;
-
-    /** @var int */
-    protected $remainingAttempts;
-
-    /** @var DateTimeImmutable */
-    protected $resetAt;
+    protected string $identifier;
+    protected bool $success;
+    protected int $limit;
+    protected int $remainingAttempts;
+    protected DateTimeImmutable $resetAt;
 
     final protected function __construct(string $identifier, bool $success, int $limit, int $remainingAttempts, DateTimeImmutable $resetAt)
     {

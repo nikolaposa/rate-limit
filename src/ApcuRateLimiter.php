@@ -17,8 +17,7 @@ use function time;
 
 final class ApcuRateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
-    /** @var string */
-    private $keyPrefix;
+    private string $keyPrefix;
 
     public function __construct(Rate $rate, string $keyPrefix = '')
     {

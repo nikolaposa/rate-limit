@@ -8,11 +8,8 @@ use Assert\Assertion;
 
 class Rate
 {
-    /** @var int */
-    protected $operations;
-
-    /** @var int */
-    protected $interval;
+    protected int $operations;
+    protected int $interval;
 
     final protected function __construct(int $operations, int $interval)
     {

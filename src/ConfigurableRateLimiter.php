@@ -6,8 +6,7 @@ namespace RateLimit;
 
 abstract class ConfigurableRateLimiter
 {
-    /** @var Rate */
-    protected $rate;
+    protected Rate $rate;
 
     public function __construct(Rate $rate)
     {

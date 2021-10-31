@@ -10,8 +10,7 @@ use function time;
 
 final class InMemoryRateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
-    /** @var array */
-    private $store = [];
+    private array $store = [];
 
     public function limit(string $identifier): void
     {
