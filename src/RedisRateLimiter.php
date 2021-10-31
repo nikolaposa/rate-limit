@@ -10,7 +10,7 @@ use function ceil;
 use function max;
 use function time;
 
-final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
+final class RedisRateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
     /** @var Redis */
     private $redis;
@@ -18,46 +18,47 @@ final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
     /** @var string */
     private $keyPrefix;
 
-    public function __construct(Redis $redis, string $keyPrefix = '')
+    public function __construct(Rate $rate, Redis $redis, string $keyPrefix = '')
     {
+        parent::__construct($rate);
         $this->redis = $redis;
         $this->keyPrefix = $keyPrefix;
     }
 
-    public function limit(string $identifier, Rate $rate): void
+    public function limit(string $identifier): void
     {
-        $key = $this->key($identifier, $rate->getInterval());
+        $key = $this->key($identifier);
 
         $current = $this->getCurrent($key);
 
-        if ($current >= $rate->getOperations()) {
-            throw LimitExceeded::for($identifier, $rate);
+        if ($current >= $this->rate->getOperations()) {
+            throw LimitExceeded::for($identifier, $this->rate);
         }
 
-        $this->updateCounter($key, $rate->getInterval());
+        $this->updateCounter($key);
     }
 
-    public function limitSilently(string $identifier, Rate $rate): Status
+    public function limitSilently(string $identifier): Status
     {
-        $key = $this->key($identifier, $rate->getInterval());
+        $key = $this->key($identifier);
 
         $current = $this->getCurrent($key);
 
-        if ($current <= $rate->getOperations()) {
-            $current = $this->updateCounter($key, $rate->getInterval());
+        if ($current <= $this->rate->getOperations()) {
+            $current = $this->updateCounter($key);
         }
 
         return Status::from(
             $identifier,
             $current,
-            $rate->getOperations(),
+            $this->rate->getOperations(),
             time() + $this->ttl($key)
         );
     }
 
-    private function key(string $identifier, int $interval): string
+    private function key(string $identifier): string
     {
-        return "{$this->keyPrefix}{$identifier}:$interval";
+        return "{$this->keyPrefix}{$identifier}:{$this->rate->getInterval()}";
     }
 
     private function getCurrent(string $key): int
@@ -65,12 +66,12 @@ final class RedisRateLimiter implements RateLimiter, SilentRateLimiter
         return (int) $this->redis->get($key);
     }
 
-    private function updateCounter(string $key, int $interval): int
+    private function updateCounter(string $key): int
     {
         $current = $this->redis->incr($key);
 
         if ($current === 1) {
-            $this->redis->expire($key, $interval);
+            $this->redis->expire($key, $this->rate->getInterval());
         }
 
         return $current;

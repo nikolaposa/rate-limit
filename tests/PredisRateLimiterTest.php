@@ -6,12 +6,13 @@ namespace RateLimit\Tests;
 
 use Predis\Client;
 use RateLimit\PredisRateLimiter;
+use RateLimit\Rate;
 use RateLimit\RateLimiter;
 use function class_exists;
 
 class PredisRateLimiterTest extends RateLimiterTest
 {
-    protected function getRateLimiter(): RateLimiter
+    protected function getRateLimiter(Rate $rate): RateLimiter
     {
         if (!class_exists('Predis\Client')) {
             $this->markTestSkipped('Predis library is not available');
@@ -26,6 +27,6 @@ class PredisRateLimiterTest extends RateLimiterTest
 
         $predis->flushdb();
 
-        return new PredisRateLimiter($predis);
+        return new PredisRateLimiter($rate, $predis);
     }
 }

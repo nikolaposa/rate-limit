@@ -28,12 +28,12 @@ use RateLimit\Rate;
 use RateLimit\RedisRateLimiter;
 use Redis;
 
-$rateLimiter = new RedisRateLimiter(new Redis());
+$rateLimiter = new RedisRateLimiter(Rate::perMinute(100), new Redis());
 
 $apiKey = 'abc123';
 
 try {
-    $rateLimiter->limit($apiKey, Rate::perMinute(100));
+    $rateLimiter->limit($apiKey);
     
     //on success
 } catch (LimitExceeded $exception) {
@@ -48,10 +48,10 @@ use RateLimit\Rate;
 use RateLimit\RedisRateLimiter;
 use Redis;
 
-$rateLimiter = new RedisRateLimiter(new Redis());
+$rateLimiter = new RedisRateLimiter(Rate::perMinute(100), new Redis());
 
 $ipAddress = '192.168.1.2';
-$status = $rateLimiter->limitSilently($ipAddress, Rate::perMinute(100));
+$status = $rateLimiter->limitSilently($ipAddress);
 
 echo $status->getRemainingAttempts(); //99
 ```
