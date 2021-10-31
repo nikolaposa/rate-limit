@@ -56,6 +56,16 @@ $status = $rateLimiter->limitSilently($ipAddress);
 echo $status->getRemainingAttempts(); //99
 ```
 
+**Practical usage with configuring multiple rate limiting strategies in a project**
+
+```php
+use RateLimit\Rate;
+use RateLimit\RedisRateLimiter;
+
+$container->set('rate_limiter.api', new RedisRateLimiter(Rate::perSecond(10), $container->get('redis')));
+$container->set('rate_limiter.videos', new RedisRateLimiter(Rate::perDay(5), $container->get('redis')));
+```
+
 ## Supported drivers
 
 - [Redis](src/RedisRateLimiter.php)
