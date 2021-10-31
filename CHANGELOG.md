@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.0 - 2021-10-31
+
+### Changed
+- [52: Rate as configuration](https://github.com/nikolaposa/rate-limit/pull/52)
+- [53: PHP 7.4 adoption](https://github.com/nikolaposa/rate-limit/pull/53)
+- 
 ## 2.2.0 - 2021-01-14
 
 ### Added
