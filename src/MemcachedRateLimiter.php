@@ -15,11 +15,8 @@ final class MemcachedRateLimiter extends ConfigurableRateLimiter implements Rate
 {
     private const MEMCACHED_SECONDS_LIMIT = 2592000; // 30 days in seconds
 
-    /** @var Memcached */
-    private $memcached;
-
-    /** @var string */
-    private $keyPrefix;
+    private Memcached $memcached;
+    private string $keyPrefix;
 
     public function __construct(Rate $rate, Memcached $memcached, string $keyPrefix = '')
     {

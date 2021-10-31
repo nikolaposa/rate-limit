@@ -12,11 +12,8 @@ use function time;
 
 final class RedisRateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
-    /** @var Redis */
-    private $redis;
-
-    /** @var string */
-    private $keyPrefix;
+    private Redis $redis;
+    private string $keyPrefix;
 
     public function __construct(Rate $rate, Redis $redis, string $keyPrefix = '')
     {

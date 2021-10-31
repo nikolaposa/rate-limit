@@ -12,11 +12,8 @@ use function time;
 
 final class PredisRateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
-    /** @var ClientInterface */
-    private $predis;
-
-    /** @var string */
-    private $keyPrefix;
+    private ClientInterface $predis;
+    private string $keyPrefix;
 
     public function __construct(Rate $rate, ClientInterface $predis, string $keyPrefix = '')
     {

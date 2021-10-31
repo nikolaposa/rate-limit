@@ -9,11 +9,8 @@ use RuntimeException;
 
 final class LimitExceeded extends RuntimeException implements RateLimitException
 {
-    /** @var string */
-    private $identifier;
-
-    /** @var Rate */
-    private $rate;
+    private string $identifier;
+    private Rate $rate;
 
     public static function for(string $identifier, Rate $rate): self
     {
