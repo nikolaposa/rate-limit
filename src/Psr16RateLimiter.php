@@ -116,12 +116,7 @@ class Psr16RateLimiter extends ConfigurableRateLimiter implements RateLimiter, S
         $created_time = time();
         $interval = $this->rate->getInterval();
         $expires_at = $created_time + $interval;
-        try {
-            $random_key = $created_time . '_' . random_bytes(6);
-        } catch (\Exception $e) {
-            $random_key = $created_time. '_' . rand(0, 99999);
-        }
-        $stored_values[$random_key] = [
+        $stored_values[] = [
             'key' => $key,
             'created_time' => $created_time,
             'expires_at' => $expires_at,
