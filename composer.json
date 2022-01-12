@@ -19,7 +19,8 @@
     },
     "require": {
         "php": "^7.4 || ^8.0",
-        "beberlei/assert": "^3.2"
+        "beberlei/assert": "^3.2",
+        "psr/simple-cache": "^1.0"
     },
     "require-dev": {
         "ext-apcu": ">=5.1.12",
