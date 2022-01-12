@@ -7,11 +7,12 @@ namespace RateLimit\Tests;
 use Psr\SimpleCache\CacheInterface;
 use RateLimit\Exception\CannotUseRateLimiter;
 use RateLimit\Psr16RateLimiter;
+use RateLimit\Rate;
 use RateLimit\RateLimiter;
 
 class Psr16RateLimiterTest extends RateLimiterTest
 {
-    protected function getRateLimiter(): RateLimiter
+    protected function getRateLimiter(Rate $rate): RateLimiter
     {
         $cacheInterface = new class() implements CacheInterface {
 
@@ -20,7 +21,7 @@ class Psr16RateLimiterTest extends RateLimiterTest
 
             /**
              * @param string $key
-             * @param null $default
+             * @param mixed|null $default
              * @return ?mixed
              */
             public function get($key, $default = null)
@@ -76,7 +77,7 @@ class Psr16RateLimiterTest extends RateLimiterTest
                 return false;
             }
 
-            public function deleteMultiple($keys)
+            public function deleteMultiple($keys): bool
             {
                 // Not used.
                 return false;
@@ -90,7 +91,7 @@ class Psr16RateLimiterTest extends RateLimiterTest
         };
 
         try {
-            $rateLimiter = new Psr16RateLimiter($cacheInterface);
+            $rateLimiter = new Psr16RateLimiter($rate, $cacheInterface);
         } catch (CannotUseRateLimiter $exception) {
             $this->markTestSkipped($exception->getMessage());
         }
