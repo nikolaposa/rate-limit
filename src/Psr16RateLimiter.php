@@ -70,7 +70,7 @@ class Psr16RateLimiter extends ConfigurableRateLimiter implements RateLimiter, S
      * @param string $identifier
      * @return string
      */
-    private function key(string $identifier): string
+    protected function key(string $identifier): string
     {
         return "{$this->keyPrefix}{$identifier}:{$this->rate->getInterval()}";
     }
