@@ -95,7 +95,7 @@ class Psr16RateLimiter extends ConfigurableRateLimiter implements RateLimiter, S
     protected function getCurrentStoredCounter(string $key): array
     {
         try {
-            $stored_values = $this->psrCache->get($key, []);
+            $stored_values = $this->psrCache->get($key, []) ?: [];
         } catch (InvalidArgumentException $e) {
             $stored_values = [];
         }
