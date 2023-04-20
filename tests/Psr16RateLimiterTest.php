@@ -91,11 +91,16 @@ class Psr16RateLimiterTest extends RateLimiterTest
         };
 
         try {
-            $rateLimiter = new Psr16RateLimiter($rate, $cacheInterface);
+            $rateLimiter = $this->getRateLimiterFromCache($rate, $cacheInterface);
         } catch (CannotUseRateLimiter $exception) {
             $this->markTestSkipped($exception->getMessage());
         }
 
         return $rateLimiter;
+    }
+
+    protected function getRateLimiterFromCache(Rate $rate, CacheInterface $cacheInterface): RateLimiter
+    {
+        return new Psr16RateLimiter($rate, $cacheInterface);
     }
 }
