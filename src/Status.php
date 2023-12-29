@@ -24,7 +24,7 @@ class Status
         $this->resetAt = $resetAt;
     }
 
-    public static function from(string $identifier, int $current, int $limit, int $resetTime)
+    public static function from(string $identifier, int $current, int $limit, int $resetTime): static
     {
         return new static(
             $identifier,
