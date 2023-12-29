@@ -5,8 +5,6 @@ parameters:
         - tests
     checkMissingIterableValueType: false
     ignoreErrors:
-        - '~Method [a-zA-Z0-9\\_]+::from[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
-        - '~Method [a-zA-Z0-9\\_]+Rate::[a-zA-Z0-9_]*\(\) has no return typehint specified.~'
         - message: '~Strict comparison using === between int and false will always evaluate to false.~'
           path: 'src/ApcuRateLimiter.php'
 
