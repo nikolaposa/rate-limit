@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.2.0 - 2024-05-17
+
+### Added
+- [57: RuntimeConfigurableRateLimiter](https://github.com/nikolaposa/rate-limit/pull/57)
+
 ## 3.1.0 - 2023-12-29
 
 ### Changed
@@ -77,4 +82,4 @@ All notable changes to this project will be documented in this file.
 - Rename `IdentityGenerator` to `IdentityResolver`
 
 
-[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/3.1.0...HEAD
+[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/3.2.0...HEAD
