@@ -10,6 +10,7 @@ final class RuntimeConfigurableRateLimiter extends ConfigurableRateLimiter imple
 {
     public function __construct(private RateLimiter|SilentRateLimiter $rateLimiter)
     {
+        parent::__construct(Rate::perSecond(1));
     }
 
     public function limit(string $identifier, Rate $rate = null): void
