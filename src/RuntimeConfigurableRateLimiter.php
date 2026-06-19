@@ -13,7 +13,7 @@ final class RuntimeConfigurableRateLimiter extends ConfigurableRateLimiter imple
         parent::__construct(Rate::perSecond(1));
     }
 
-    public function limit(string $identifier, Rate $rate = null): void
+    public function limit(string $identifier, ?Rate $rate = null): void
     {
         if (!$this->rateLimiter instanceof RateLimiter) {
             throw new LogicException('Decorated Rate Limiter must implement RateLimiter interface');
@@ -26,7 +26,7 @@ final class RuntimeConfigurableRateLimiter extends ConfigurableRateLimiter imple
         $this->rateLimiter->limit($identifier);
     }
 
-    public function limitSilently(string $identifier, Rate $rate = null): Status
+    public function limitSilently(string $identifier, ?Rate $rate = null): Status
     {
         if (!$this->rateLimiter instanceof SilentRateLimiter) {
             throw new LogicException('Decorated Rate Limiter must implement SilentRateLimiter interface');
