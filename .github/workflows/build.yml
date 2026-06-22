@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 8.1
+          - 8.2
 
     steps:
       - name: Checkout
@@ -38,7 +38,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -58,7 +58,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 8.1
+          - 8.2
 
     steps:
       - name: Checkout
@@ -76,7 +76,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -107,9 +107,10 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 8.1
           - 8.2
           - 8.3
+          - 8.4
+          - 8.5
 
     steps:
       - name: Checkout
@@ -128,7 +129,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -159,7 +160,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 8.1
+          - 8.2
 
     steps:
       - name: Checkout
@@ -180,7 +181,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
