@@ -2,10 +2,11 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
-    ->exclude('vendor')
-;
+    ->exclude('vendor');
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
+    ->setFinder($finder)
+    ->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
         'array_syntax' => ['syntax' => 'short'],
@@ -27,7 +28,4 @@ return PhpCsFixer\Config::create()
         ],
         'phpdoc_line_span' => ['property' => 'single'],
         'return_type_declaration' => ['space_before' => 'none'],
-])
-    ->setRiskyAllowed(true)
-    ->setFinder($finder)
-;
+]);

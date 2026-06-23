@@ -65,7 +65,7 @@ final class RedisRateLimiter extends ConfigurableRateLimiter implements RateLimi
 
     private function updateCounter(string $key): int
     {
-        $current = $this->redis->incr($key);
+        $current = (int) $this->redis->incr($key);
 
         if ($current === 1) {
             $this->redis->expire($key, $this->rate->getInterval());

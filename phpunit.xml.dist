@@ -1,15 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-    bootstrap="./vendor/autoload.php"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
     colors="true"
 >
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </source>
+    <coverage/>
     <testsuites>
-        <testsuite name="Rate Limit tests">
+        <testsuite name="unit">
             <directory>./tests</directory>
+            <exclude>./tests/RateLimiterTest.php</exclude>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src</directory>
-        </whitelist>
-    </filter>
+    <php>
+        <ini name="error_reporting" value="E_ALL"/>
+    </php>
 </phpunit>

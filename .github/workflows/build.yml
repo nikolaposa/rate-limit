@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 7.4
+          - 8.2
 
     steps:
       - name: Checkout
@@ -38,7 +38,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -58,7 +58,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 7.4
+          - 8.2
 
     steps:
       - name: Checkout
@@ -76,7 +76,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -107,8 +107,10 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 7.4
-          - 8.0
+          - 8.2
+          - 8.3
+          - 8.4
+          - 8.5
 
     steps:
       - name: Checkout
@@ -127,7 +129,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -158,11 +160,13 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 7.4
+          - 8.2
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 10
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -177,7 +181,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -186,10 +190,11 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction
 
-      - name: Collect code coverage
+      - name: Download code coverage reporter
+        run: composer global require scrutinizer/ocular
+
+      - name: Collect code coverage with phpunit/phpunit and
         run: vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml
 
       - name: Upload code coverage
-        run: |
-          wget https://scrutinizer-ci.com/ocular.phar
-          php ocular.phar code-coverage:upload --format=php-clover clover.xml
+        run: ~/.composer/vendor/bin/ocular code-coverage:upload --format=php-clover clover.xml
