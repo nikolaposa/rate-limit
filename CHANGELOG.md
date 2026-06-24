@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.3.0 - 2026-06-24
+
+## What's Changed
+- Update beberlei/assert to ^3.3 by @deiga in https://github.com/nikolaposa/rate-limit/pull/58
+- fix: explicitly declare nullable types for parameters defaulting to null by @arueckauer in https://github.com/nikolaposa/rate-limit/pull/60
+- Add PSR-16 rate limiter by @BrianHenryIE in https://github.com/nikolaposa/rate-limit/pull/49
+
 ## 3.2.0 - 2024-05-17
 
 ### Added
@@ -82,4 +89,4 @@ All notable changes to this project will be documented in this file.
 - Rename `IdentityGenerator` to `IdentityResolver`
 
 
-[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/3.2.0...HEAD
+[link-unreleased]: https://github.com/nikolaposa/rate-limit/compare/3.3.0...HEAD
