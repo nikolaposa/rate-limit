@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Implementation of nikolaposa/rate-limit to allow using a PSR-16 cache for storage.
  *
@@ -21,7 +20,6 @@ use function time;
 
 class Psr16RateLimiter extends ConfigurableRateLimiter implements RateLimiter, SilentRateLimiter
 {
-
     /** @var CacheInterface */
     protected $psrCache;
 
@@ -34,7 +32,6 @@ class Psr16RateLimiter extends ConfigurableRateLimiter implements RateLimiter, S
         $this->psrCache = $cache;
         $this->keyPrefix = $keyPrefix;
     }
-
 
     public function limit(string $identifier): void
     {
